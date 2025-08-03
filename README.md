@@ -158,6 +158,9 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 NEXT_PUBLIC_APP_NAME=Gemma Chat
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
+# Tetris Spinner Configuration
+NEXT_PUBLIC_SPINNER_SPEED=300
+
 # Google OAuth Configuration
 # Get these from https://console.cloud.google.com/apis/credentials
 GOOGLE_CLIENT_ID=your_google_client_id_here
@@ -183,6 +186,17 @@ You can generate a secure secret using:
 ```bash
 openssl rand -base64 32
 ```
+
+### Environment Variables Explained
+
+- **OPENROUTER_API_KEY**: Your OpenRouter API key for AI model access
+- **NEXT_PUBLIC_APP_NAME**: The name of your application (displayed in UI)
+- **NEXT_PUBLIC_APP_URL**: The base URL of your application
+- **NEXT_PUBLIC_SPINNER_SPEED**: Speed of Tetris spinner animation in milliseconds (default: 300ms)
+- **GOOGLE_CLIENT_ID**: Google OAuth client ID for authentication
+- **GOOGLE_CLIENT_SECRET**: Google OAuth client secret for authentication
+- **NEXTAUTH_SECRET**: Secret key for NextAuth.js session encryption
+- **NEXTAUTH_URL**: The base URL for NextAuth.js callbacks
 
 ### Complete Setup Steps
 

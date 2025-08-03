@@ -17,7 +17,7 @@ export function SignIn() {
       <Card className="w-full max-w-md bg-gray-800 border-gray-700">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-            <MessageCircle className="w-8 h-8 text-white" />
+            <img src="/favicon.svg" alt="App Logo" className="w-8 h-8" />
           </div>
           <CardTitle className="text-2xl font-bold text-white">
             Чат GoAI
