@@ -1,6 +1,6 @@
 {
-  "name": "chat-goai",
-  "version": "0.1.4",
+  "name": "goai-timeline",
+  "version": "0.3.9",
   "private": true,
   "scripts": {
     "dev": "next dev",
