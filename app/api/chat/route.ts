@@ -1,10 +1,11 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import { sendMessageToGemma, parseStreamChunk } from '@/lib/openrouter';
+import { sendMessageToProvider, parseStreamChunk } from '@/lib/openrouter';
+import { AIProvider } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages } = await request.json();
+    const { messages, provider = 'google-gemma' } = await request.json();
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json(
@@ -13,7 +14,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const stream = await sendMessageToGemma(messages);
+    // Валидация провайдера
+    const validProviders: AIProvider[] = ['google-gemma', 'mistral-medium'];
+    if (!validProviders.includes(provider)) {
+      return NextResponse.json(
+        { error: { message: 'Invalid provider specified' } },
+        { status: 400 }
+      );
+    }
+
+    const stream = await sendMessageToProvider(messages, provider);
     const reader = stream.getReader();
     const decoder = new TextDecoder();
 

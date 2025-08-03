@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { ChatMessage } from '@/lib/types';
+import { ChatMessage, AIProvider } from '@/lib/types';
 import { toast } from 'sonner';
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedProvider, setSelectedProvider] = useState<AIProvider>('google-gemma');
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const sendMessage = useCallback(async (content: string) => {
@@ -58,7 +59,10 @@ export function useChat() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ messages: apiMessages }),
+        body: JSON.stringify({ 
+          messages: apiMessages,
+          provider: selectedProvider 
+        }),
         signal: abortControllerRef.current.signal,
       });
 
@@ -148,7 +152,7 @@ export function useChat() {
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [messages, isLoading]);
+  }, [messages, isLoading, selectedProvider]);
 
   const clearChat = useCallback(() => {
     // Abort any ongoing request
@@ -178,6 +182,8 @@ export function useChat() {
     messages,
     isLoading,
     error,
+    selectedProvider,
+    setSelectedProvider,
     sendMessage,
     clearChat,
     retryLastMessage,

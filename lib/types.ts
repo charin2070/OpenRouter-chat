@@ -48,3 +48,24 @@ export interface ApiError {
     code?: string;
   };
 }
+
+export type AIProvider = 'google-gemma' | 'mistral-medium';
+
+export interface ProviderConfig {
+  id: AIProvider;
+  name: string;
+  description: string;
+}
+
+export const AI_PROVIDERS: ProviderConfig[] = [
+  {
+    id: 'google-gemma',
+    name: 'Google Gemma 3b',
+    description: 'Fast and efficient model for general conversation'
+  },
+  {
+    id: 'mistral-medium',
+    name: 'Mistral Medium',
+    description: 'Advanced model with enhanced reasoning capabilities'
+  }
+];

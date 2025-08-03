@@ -123,7 +123,8 @@ eyer.ai
 ## Features
 
 - 🔐 **Google Authentication**: Secure sign-in with Google OAuth
-- 🤖 **AI Chat Interface**: Real-time streaming responses from Google Gemma 3b model
+- 🤖 **Multi-AI Provider Support**: Choose between Google Gemma 3b and Mistral Medium models
+- 🎛️ **AI Provider Selection**: Easy switching between AI providers via sidebar dropdown
 - 💬 **Modern UI**: Clean, professional design with message bubbles and animations
 - ⚡ **Real-time Streaming**: See AI responses appear in real-time as they're generated
 - 📱 **Responsive Design**: Works perfectly on desktop and mobile devices
@@ -139,7 +140,7 @@ eyer.ai
 - **Language**: TypeScript with strict type checking
 - **Styling**: Tailwind CSS with shadcn/ui components
 - **Authentication**: NextAuth.js with Google OAuth
-- **AI Integration**: OpenRouter API with Google Gemma 3b model
+- **AI Integration**: OpenRouter API with multiple AI models (Google Gemma 3b, Mistral Medium)
 - **Package Manager**: pnpm (recommended) or npm
 
 ## Getting Started
@@ -199,10 +200,16 @@ npm start
 
 ## API Configuration
 
-The application is configured to use:
-- **Model**: `google/gemma-2-9b-it:free` (Google Gemma 3b Free tier)
-- **API Endpoint**: OpenRouter API (`https://openrouter.ai/api/v1/chat/completions`)
+The application supports multiple AI providers through OpenRouter API:
+
+### Available AI Models
+- **Google Gemma 3b**: `google/gemma-2-9b-it:free` (Free tier)
+- **Mistral Medium**: `mistralai/mistral-medium` (Premium tier)
+
+### API Endpoint
+- **Base URL**: OpenRouter API (`https://openrouter.ai/api/v1/chat/completions`)
 - **Features**: Streaming responses, temperature control, token limits
+- **Provider Selection**: Users can switch between AI providers via the sidebar dropdown
 
 ## Project Structure
 

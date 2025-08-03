@@ -1,4 +1,4 @@
-import { OpenRouterResponse, ApiError } from './types';
+import { OpenRouterResponse, ApiError, AIProvider } from './types';
 
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const MODEL = 'google/gemma-2-9b-it:free';
@@ -6,10 +6,30 @@ const MODEL = 'google/gemma-2-9b-it:free';
 export async function sendMessageToGemma(
   messages: { role: string; content: string }[]
 ): Promise<ReadableStream<Uint8Array>> {
+  return sendMessageToProvider(messages, 'google-gemma');
+}
+
+export async function sendMessageToProvider(
+  messages: { role: string; content: string }[],
+  provider: AIProvider
+): Promise<ReadableStream<Uint8Array>> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   
   if (!apiKey) {
     throw new Error('OpenRouter API key is not configured');
+  }
+
+  // Определяем модель в зависимости от провайдера
+  let model: string;
+  switch (provider) {
+    case 'google-gemma':
+      model = 'google/gemma-2-9b-it:free';
+      break;
+    case 'mistral-medium':
+      model = 'mistralai/mistral-medium';
+      break;
+    default:
+      throw new Error(`Unsupported provider: ${provider}`);
   }
 
   const response = await fetch(OPENROUTER_API_URL, {
@@ -21,7 +41,7 @@ export async function sendMessageToGemma(
       'X-Title': process.env.NEXT_PUBLIC_APP_NAME || 'Gemma Chat',
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: model,
       messages,
       stream: true,
       temperature: 0.7,
@@ -31,7 +51,7 @@ export async function sendMessageToGemma(
 
   if (!response.ok) {
     const error: ApiError = await response.json();
-    throw new Error(error.error?.message || 'Failed to send message to Gemma');
+    throw new Error(error.error?.message || `Failed to send message to ${provider}`);
   }
 
   if (!response.body) {

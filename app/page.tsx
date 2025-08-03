@@ -18,6 +18,8 @@ export default function ChatPage() {
     messages,
     isLoading: chatLoading,
     error,
+    selectedProvider,
+    setSelectedProvider,
     sendMessage,
     clearChat,
     retryLastMessage,
@@ -36,7 +38,11 @@ export default function ChatPage() {
   // Show chat interface if authenticated
   return (
     <div className="chatgpt-container flex h-screen">
-      <Sidebar onNewChat={clearChat} />
+      <Sidebar 
+        onNewChat={clearChat} 
+        selectedProvider={selectedProvider}
+        onProviderChange={setSelectedProvider}
+      />
       
       <div className="chatgpt-main flex flex-col flex-1">
         <ChatHeader 
