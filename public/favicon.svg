@@ -5,7 +5,7 @@
 
 <defs>
 
-<style>.cls-1{fill:#008080;}.cls-2{fill:#   ;}</style>
+<style>.cls-1{fill:var(--product-primary-color);}.cls-2{fill:var(--product-primary-color);}</style>
 
 </defs>
 
@@ -22,8 +22,6 @@
 </g>
 
 </g>
-
-<path class="cls-2" d="M12,10l8-4L12.12,2.06a.25.25,0,0,0-.24,0L4,6Z"/>
 
 </g>
 

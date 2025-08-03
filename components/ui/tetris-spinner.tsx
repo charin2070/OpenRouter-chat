@@ -133,10 +133,10 @@ export const TetrisSpinner = forwardRef<TetrisSpinnerRef>((props, ref) => {
             isVisible ? 'opacity-100' : 'opacity-0'
           } ${isFlickering ? 'opacity-50' : ''}`}
           style={{
-            width: '1em',
-            height: '1em',
-            left: isDisappearing ? `${index * 1}em` : `${block.x * 1}em`,
-            top: isDisappearing ? '1.5em' : `${block.y * 1}em`,
+            width: '0.85em',
+            height: '0.85em',
+            left: isDisappearing ? `${index * 1.15}em` : `${block.x * 1.15}em`,
+            top: isDisappearing ? '1.5em' : `${block.y * 1.15}em`,
             transform: isAnimating ? 'scale(0.8) opacity-50' : 'scale(1) opacity-100',
             transitionDelay: isVisible ? `${index * 50}ms` : '0ms',
           }}
