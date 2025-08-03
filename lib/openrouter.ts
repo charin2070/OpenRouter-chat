@@ -1,7 +1,11 @@
 import { OpenRouterResponse, ApiError, AIProvider } from './types';
 
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = 'google/gemma-2-9b-it:free';
+const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const MODELS = {
+  GEMMA_2_9B : 'google/gemma-2-9b-it:free'
+}
+
+const MODEL = MODELS.GEMMA_2_9B;
 
 export async function sendMessageToGemma(
   messages: { role: string; content: string }[]
@@ -26,13 +30,13 @@ export async function sendMessageToProvider(
       model = 'google/gemma-2-9b-it:free';
       break;
     case 'mistral-medium':
-      model = 'mistralai/mistral-medium';
+      model = 'mistral-medium';
       break;
     default:
       throw new Error(`Unsupported provider: ${provider}`);
   }
 
-  const response = await fetch(OPENROUTER_API_URL, {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,

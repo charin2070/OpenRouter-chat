@@ -1,18 +1,24 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { ChatMessage, AIProvider } from '@/lib/types';
+import { ChatMessage } from '@/lib/types';
+import { useAiProvider } from './use-ai-provider';
 import { toast } from 'sonner';
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedProvider, setSelectedProvider] = useState<AIProvider>('google-gemma');
   const abortControllerRef = useRef<AbortController | null>(null);
+  
+  const {
+    selectedProvider,
+    changeProvider,
+    getCurrentProvider,
+    isLoading: isProviderLoading
+  } = useAiProvider('google-gemma');
 
   const sendMessage = useCallback(async (content: string) => {
-    if (isLoading) return;
+    if (isLoading || isProviderLoading) return;
 
     // Create user message
     const userMessage: ChatMessage = {
@@ -26,14 +32,12 @@ export function useChat() {
     // Create assistant message placeholder
     const assistantMessage: ChatMessage = {
       id: Date.now().toString() + '-assistant',
-      role: 'assistant',
       content: '',
       timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage, assistantMessage]);
     setIsLoading(true);
-    setError(null);
 
     try {
       // Update user message status to sent
@@ -132,15 +136,18 @@ export function useChat() {
       }
 
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      setError(errorMessage);
       
-      // Update user message status to error
+      // Update assistant message to show error as AI response with red styling
       setMessages(prev => 
         prev.map(msg => 
           msg.id === userMessage.id 
             ? { ...msg, status: 'error' as const }
             : msg.id === assistantMessage.id
-            ? { ...msg, content: 'Sorry, I encountered an error. Please try again.' }
+            ? { 
+                ...msg, 
+                content: `❌ **Ошибка:** ${errorMessage}\n\nПожалуйста, попробуйте еще раз или выберите другую модель.`,
+                status: 'error' as const
+              }
             : msg
         )
       );
@@ -152,7 +159,7 @@ export function useChat() {
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [messages, isLoading, selectedProvider]);
+  }, [messages, isLoading, selectedProvider, isProviderLoading]);
 
   const clearChat = useCallback(() => {
     // Abort any ongoing request
@@ -162,7 +169,6 @@ export function useChat() {
     }
     
     setMessages([]);
-    setError(null);
     setIsLoading(false);
     toast.success('Chat cleared');
   }, []);
@@ -180,10 +186,10 @@ export function useChat() {
 
   return {
     messages,
-    isLoading,
-    error,
+    isLoading: isLoading || isProviderLoading,
     selectedProvider,
-    setSelectedProvider,
+    setSelectedProvider: changeProvider,
+    getCurrentProvider,
     sendMessage,
     clearChat,
     retryLastMessage,

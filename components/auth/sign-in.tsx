@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/lib/auth-context';
 import { MessageCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { TetrisSpinner } from '../ui/tetris-spinner';
 
 export function SignIn() {
   const { signIn, isLoading } = useAuth();
@@ -15,7 +16,7 @@ export function SignIn() {
     // Задержка для начала анимации
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 100);
+    }, 1);
     return () => clearTimeout(timer);
   }, []);
 
@@ -37,11 +38,8 @@ export function SignIn() {
         }}
       >
         <CardHeader className="text-center">
-          <div className={`mx-auto mb-6 w-24 h-24 rounded-full flex items-center justify-center p-1 transition-all duration-700 delay-300 ${
-            isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
-          }`}>
-            <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
-              <svg width="64" height="64" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="w-16 h-16">
+          
+            <svg width="84" height="84" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="w-16 h-16">
                 <title>Icon_24px_Dialogflow_Color</title>
                 <g data-name="Product Icons">
                   <g data-name="colored-32/dialogflow-enterprise">
@@ -54,18 +52,17 @@ export function SignIn() {
                   </g>
                 </g>
               </svg>
-            </div>
-          </div>
+        
           <CardTitle className={`text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent transition-all duration-700 delay-500 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}>
-            Авторизация
+            Войти в GoAI
             {/* Войти в Go AI */}
           </CardTitle>
           <CardDescription className={`text-gray-400 text-lg mt-2 transition-all duration-700 delay-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}>
-             выберите аккаунт, зарегистрированный в Go AI
+          
           </CardDescription>
         </CardHeader>
         <CardContent className={`space-y-6 transition-all duration-700 delay-900 ${
@@ -106,8 +103,7 @@ export function SignIn() {
               <span className="text-lg font-medium">
                 {isLoading ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Вход...
+                    <TetrisSpinner width={'5em'}/>
                   </div>
                 ) : (
                   'Войти с Google'
@@ -125,11 +121,11 @@ export function SignIn() {
           
           <div className="text-center">
             <p className="text-gray-500 text-sm">
-             
+             * Только для доверенных аккаунтов
             </p>
           </div>
         </CardContent>
       </Card>
     </div>
   );
-} 
+}

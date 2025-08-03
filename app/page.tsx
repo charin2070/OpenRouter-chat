@@ -47,7 +47,8 @@ export default function ChatPage() {
       <div className="chatgpt-main flex flex-col flex-1">
         <ChatHeader 
           messageCount={messages.length} 
-          onClearChat={clearChat} 
+          onClearChat={clearChat}
+          selectedProvider={selectedProvider}
         />
         <LogUploader />
 

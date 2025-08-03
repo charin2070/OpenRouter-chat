@@ -227,22 +227,33 @@ The application supports multiple AI providers through OpenRouter API:
 │   │   └── user-profile.tsx # User profile dropdown
 │   ├── chat/              # Chat-specific components
 │   │   ├── chat-header.tsx     # Header with clear chat functionality
+│   │   ├── sidebar.tsx         # Sidebar with AI provider selection
 │   │   ├── message-list.tsx    # Scrollable message container
 │   │   ├── message-bubble.tsx  # Individual message bubbles
 │   │   ├── message-input.tsx   # Input field with send button
-│   │   └── error-message.tsx   # Error display with retry
+│   │   ├── error-message.tsx   # Error display with retry
+│   │   └── log-uploader.tsx    # Log file upload component
 │   └── ui/                # shadcn/ui components
 ├── hooks/
 │   └── use-chat.ts        # Custom hook for chat functionality
 ├── lib/
 │   ├── auth-context.tsx   # Authentication context
-│   ├── types.ts           # TypeScript interfaces
-│   ├── openrouter.ts      # OpenRouter API integration
+│   ├── types.ts           # TypeScript interfaces and AI provider configurations
+│   ├── openrouter.ts      # OpenRouter API integration with multi-provider support
+│   ├── mistral.ts         # Mistral API integration (alternative provider)
 │   └── utils.ts           # Utility functions
 └── .env.local             # Environment variables
 ```
 
 ## Key Features Explained
+
+### Multi-AI Provider Support
+The application supports multiple AI providers, allowing users to choose the best model for their needs:
+- **Google Gemma 3b**: Fast and efficient model for general conversation (Free tier)
+- **Mistral Medium**: Advanced model with enhanced reasoning capabilities (Premium tier)
+- **Easy Switching**: Users can switch between providers using the sidebar dropdown
+- **Provider Persistence**: Selected provider is maintained during the session
+- **Unified Interface**: All providers use the same chat interface and streaming responses
 
 ### Google Authentication
 The application uses NextAuth.js with Google OAuth for secure user authentication:
@@ -276,8 +287,13 @@ Each message shows its status:
 Create a `.env.local` file in the root directory with the following variables:
 
 ```env
-# OpenRouter API Configuration
+# OpenRouter API Configuration (supports both Google Gemma and Mistral)
 OPENROUTER_API_KEY=your_openrouter_api_key_here
+
+# AI Model Configuration (optional - defaults are used if not set)
+AI_MISTRAL_MODEL=mistralai/mistral-medium
+AI_TEMPERATURE=0.7
+AI_MAX_TOKENS=1000
 
 # App Configuration
 NEXT_PUBLIC_APP_NAME=Gemma Chat
@@ -314,7 +330,10 @@ openssl rand -base64 32
 
 ### Environment Variables Explained
 
-- **OPENROUTER_API_KEY**: Your OpenRouter API key for AI model access
+- **OPENROUTER_API_KEY**: Your OpenRouter API key for AI model access (supports both Google Gemma and Mistral)
+- **AI_MISTRAL_MODEL**: Mistral model identifier (default: `mistralai/mistral-medium`)
+- **AI_TEMPERATURE**: Controls response randomness (default: 0.7)
+- **AI_MAX_TOKENS**: Maximum tokens in response (default: 1000)
 - **NEXT_PUBLIC_APP_NAME**: The name of your application (displayed in UI)
 - **NEXT_PUBLIC_APP_URL**: The base URL of your application
 - **NEXT_PUBLIC_SPINNER_SPEED**: Speed of Tetris spinner animation in milliseconds (default: 300ms)
@@ -346,6 +365,11 @@ openssl rand -base64 32
    - Click "Sign in with Google" to authenticate
    - After successful authentication, you'll be redirected to the chat interface
 
+5. **Choose your AI provider**:
+   - Use the dropdown in the sidebar to select between Google Gemma 3b and Mistral Medium
+   - The selected provider will be used for all subsequent chat messages
+   - You can switch providers at any time during your session
+
 ## Security Considerations
 
 - **Authentication**: Secure OAuth 2.0 flow with Google
@@ -355,6 +379,32 @@ openssl rand -base64 32
 - **Input Validation**: Validation on all API endpoints
 - **Error Handling**: Secure error handling without exposing internals
 - **Environment Variables**: Sensitive data stored in environment variables
+
+## AI Provider Selection
+
+The application supports multiple AI providers through a unified interface:
+
+### How it Works
+- **Provider Selection**: Users can choose between Google Gemma 3b and Mistral Medium via the sidebar dropdown
+- **Session Persistence**: The selected provider is maintained throughout the user's session
+- **API Routing**: All requests are routed through OpenRouter API with the appropriate model selection
+- **Unified Experience**: Both providers offer the same streaming response experience
+
+### Provider Comparison
+- **Google Gemma 3b**: 
+  - Free tier available
+  - Fast response times
+  - Good for general conversation and simple tasks
+- **Mistral Medium**: 
+  - Premium tier (requires credits)
+  - Enhanced reasoning capabilities
+  - Better for complex analysis and detailed responses
+
+### Technical Implementation
+- Provider state is managed in the `useChat` hook
+- API requests include the selected provider parameter
+- Backend validates and routes requests to the appropriate model
+- All providers use the same streaming response format
 
 ## Performance Optimizations
 

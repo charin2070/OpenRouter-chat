@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { sendMessageToProvider, parseStreamChunk } from '@/lib/openrouter';
 import { AIProvider } from '@/lib/types';
+import { getModels } from '@/lib/mistral';
 
 export async function POST(request: NextRequest) {
   try {

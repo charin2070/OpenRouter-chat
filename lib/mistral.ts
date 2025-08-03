@@ -1,4 +1,4 @@
-import { OpenRouterResponse, ApiError } from './types';
+import { OpenRouterResponse, ApiError, MistralModelsResponse } from './types';
 
 const MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions';
 const API_KEY= process.env.MISTRAL_API_KEY;
@@ -33,20 +33,42 @@ export async function sendMessageToMistral(
   if (!response.ok) {
     const error: ApiError = await response.json();
     throw new Error(error.error?.message || 'Failed to send message to Mistral');
+    }
+
+    if (!response.body) {
+        throw new Error('No response body received');
+    }
+
+    return response.body;
+    }
+
+    export async function getModels(): Promise<MistralModelsResponse> {
+  if (!API_KEY) {
+    throw new Error('Mistral API key is not configured');
   }
 
-  if (!response.body) {
-    throw new Error('No response body received');
+  const response = await fetch('https://api.mistral.ai/v1/models', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const error: ApiError = await response.json();
+    throw new Error(error.error?.message || 'Failed to fetch models from Mistral');
   }
 
-  return response.body;
+  const data: MistralModelsResponse = await response.json();
+  return data;
 }
 
-export function parseMistralStreamChunk(chunk: string): string | null {
-  const lines = chunk.split('\n');
+    export function parseMistralStreamChunk(chunk: string): string | null {
+    const lines = chunk.split('\n');
 
-  for (const line of lines) {
-    if (line.startsWith('data: ')) {
+    for (const line of lines) {
+        if (line.startsWith('data: ')) {
       const data = line.slice(6);
 
       if (data === '[DONE]') {

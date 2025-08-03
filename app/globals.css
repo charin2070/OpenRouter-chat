@@ -116,6 +116,11 @@
   background: #444654;
 }
 
+.chatgpt-message-error {
+  background: #442222;
+  border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+}
+
 .chatgpt-input-container {
   background: #343541;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -162,6 +167,10 @@
   background: #10a37f;
 }
 
+.chatgpt-avatar-error {
+  background: #dc2626;
+}
+
 .chatgpt-text {
   color: #ececf1;
   line-height: 1.6;
@@ -173,6 +182,10 @@
 
 .chatgpt-text-assistant {
   color: #d1d5db;
+}
+
+.chatgpt-text-error {
+  color: #fca5a5;
 }
 
 .chatgpt-welcome {

@@ -14,13 +14,16 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { UserProfile } from '@/components/auth/user-profile';
+import { AiProviderInfo } from './ai-provider-info';
+import { AIProvider } from '@/lib/types';
 
 interface ChatHeaderProps {
   messageCount: number;
   onClearChat: () => void;
+  selectedProvider: AIProvider;
 }
 
-export function ChatHeader({ messageCount, onClearChat }: ChatHeaderProps) {
+export function ChatHeader({ messageCount, onClearChat, selectedProvider }: ChatHeaderProps) {
   return (
     <div className="chatgpt-message border-b border-gray-700 px-4 py-3">
       <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -40,6 +43,13 @@ export function ChatHeader({ messageCount, onClearChat }: ChatHeaderProps) {
         </div>
         
         <div className="flex items-center space-x-3">
+          {/* AI Provider Info */}
+          <AiProviderInfo 
+            provider={selectedProvider}
+            showDescription={false}
+            className="hidden md:flex"
+          />
+          
           {messageCount > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
