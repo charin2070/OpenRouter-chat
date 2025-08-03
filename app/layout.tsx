@@ -1,16 +1,18 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { Toaster } from '@/components/ui/sonner';
-
-const inter = Inter({ subsets: ['latin'] });
+import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
-  title: 'Gemma Chat - AI Assistant',
-  description: 'Chat with Google Gemma 3b model via OpenRouter',
-  keywords: ['AI', 'chat', 'Gemma', 'Google', 'OpenRouter'],
-  authors: [{ name: 'Gemma Chat App' }],
+  title: 'Chat GoAI',
+  description: 'Chat with AI assistant powered by GoAI model',
+  keywords: ['AI', 'chat', 'ChatGPT', 'OpenRouter'],
+  authors: [{ name: 'Chat GoAI' }],
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
@@ -20,9 +22,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} h-full antialiased`}>
-        {children}
-        <Toaster position="top-center" richColors />
+      <body className="h-full antialiased bg-gray-900">
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

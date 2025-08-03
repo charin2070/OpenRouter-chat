@@ -1,15 +1,17 @@
-# Gemma Chat Application
+# AI-Chat
 
-A professional chat application that communicates with Google's Gemma 3b model through the OpenRouter service. Built with Next.js, TypeScript, and shadcn/ui components.
+A professional chat application that analyzes log files with Google's Gemma 3b model through the OpenRouter service. Built with Next.js, TypeScript, and shadcn/ui components.
 
 ## Features
 
+- 🔐 **Google Authentication**: Secure sign-in with Google OAuth
 - 🤖 **AI Chat Interface**: Real-time streaming responses from Google Gemma 3b model
 - 💬 **Modern UI**: Clean, professional design with message bubbles and animations
 - ⚡ **Real-time Streaming**: See AI responses appear in real-time as they're generated
 - 📱 **Responsive Design**: Works perfectly on desktop and mobile devices
 - 🛡️ **Error Handling**: Graceful error handling with retry functionality
 - 🧹 **Chat Management**: Clear chat history with confirmation dialog
+- 👤 **User Profile**: Display user information and sign-out functionality
 - ⌨️ **Keyboard Shortcuts**: Enter to send, Shift+Enter for new lines
 - 🎨 **Professional Styling**: Beautiful gradients, animations, and micro-interactions
 
@@ -18,6 +20,7 @@ A professional chat application that communicates with Google's Gemma 3b model t
 - **Framework**: Next.js 13.5.1 with App Router
 - **Language**: TypeScript with strict type checking
 - **Styling**: Tailwind CSS with shadcn/ui components
+- **Authentication**: NextAuth.js with Google OAuth
 - **AI Integration**: OpenRouter API with Google Gemma 3b model
 - **Package Manager**: pnpm (recommended) or npm
 
@@ -87,11 +90,16 @@ The application is configured to use:
 
 ```
 ├── app/
-│   ├── api/chat/          # API route for OpenRouter communication
+│   ├── api/
+│   │   ├── auth/[...nextauth]/ # NextAuth API routes
+│   │   └── chat/          # API route for OpenRouter communication
 │   ├── globals.css        # Global styles and Tailwind CSS
 │   ├── layout.tsx         # Root layout with metadata
 │   └── page.tsx           # Main chat page
 ├── components/
+│   ├── auth/              # Authentication components
+│   │   ├── sign-in.tsx    # Google Sign-In component
+│   │   └── user-profile.tsx # User profile dropdown
 │   ├── chat/              # Chat-specific components
 │   │   ├── chat-header.tsx     # Header with clear chat functionality
 │   │   ├── message-list.tsx    # Scrollable message container
@@ -102,6 +110,7 @@ The application is configured to use:
 ├── hooks/
 │   └── use-chat.ts        # Custom hook for chat functionality
 ├── lib/
+│   ├── auth-context.tsx   # Authentication context
 │   ├── types.ts           # TypeScript interfaces
 │   ├── openrouter.ts      # OpenRouter API integration
 │   └── utils.ts           # Utility functions
@@ -109,6 +118,13 @@ The application is configured to use:
 ```
 
 ## Key Features Explained
+
+### Google Authentication
+The application uses NextAuth.js with Google OAuth for secure user authentication:
+- **Sign In**: Users can sign in with their Google account
+- **Session Management**: Automatic session handling and persistence
+- **User Profile**: Display user information and sign-out functionality
+- **Protected Routes**: Chat interface is only accessible to authenticated users
 
 ### Streaming Responses
 The application uses Server-Sent Events (SSE) to stream AI responses in real-time, providing a smooth chat experience.
@@ -132,18 +148,74 @@ Each message shows its status:
 
 ## Environment Variables
 
+Create a `.env.local` file in the root directory with the following variables:
+
 ```env
+# OpenRouter API Configuration
 OPENROUTER_API_KEY=your_openrouter_api_key_here
+
+# App Configuration
 NEXT_PUBLIC_APP_NAME=Gemma Chat
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Google OAuth Configuration
+# Get these from https://console.cloud.google.com/apis/credentials
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+
+# NextAuth Configuration
+NEXTAUTH_SECRET=your_nextauth_secret_here
+NEXTAUTH_URL=http://localhost:3000
 ```
+
+### Setting up Google OAuth
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Google+ API (or Google Identity API)
+4. Go to "Credentials" and create an "OAuth 2.0 Client ID"
+5. Set the authorized redirect URI to: `http://localhost:3000/api/auth/callback/google`
+6. Copy the Client ID and Client Secret to your `.env.local` file
+
+### Generating NextAuth Secret
+
+You can generate a secure secret using:
+```bash
+openssl rand -base64 32
+```
+
+### Complete Setup Steps
+
+1. **Install dependencies**:
+   ```bash
+   pnpm install
+   ```
+
+2. **Set up environment variables**:
+   - Copy the example environment variables above
+   - Create a `.env.local` file in the root directory
+   - Add your Google OAuth credentials and NextAuth secret
+
+3. **Start the development server**:
+   ```bash
+   pnpm dev
+   ```
+
+4. **Access the application**:
+   - Open `http://localhost:3000`
+   - You'll be redirected to the sign-in page
+   - Click "Sign in with Google" to authenticate
+   - After successful authentication, you'll be redirected to the chat interface
 
 ## Security Considerations
 
-- API keys are stored server-side only
-- Rate limiting considerations implemented
-- Input validation on all API endpoints
-- Secure error handling without exposing internals
+- **Authentication**: Secure OAuth 2.0 flow with Google
+- **Session Management**: JWT tokens with secure storage
+- **API Security**: API keys are stored server-side only
+- **Rate Limiting**: Considerations implemented for API endpoints
+- **Input Validation**: Validation on all API endpoints
+- **Error Handling**: Secure error handling without exposing internals
+- **Environment Variables**: Sensitive data stored in environment variables
 
 ## Performance Optimizations
 

@@ -26,46 +26,38 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   };
 
   return (
-    <div
-      className={cn(
-        'flex items-start space-x-3 animate-in slide-in-from-bottom-2 duration-300',
-        isUser && 'flex-row-reverse space-x-reverse'
-      )}
-    >
-      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-        {isUser ? (
-          <div className="w-full h-full bg-blue-500 rounded-full flex items-center justify-center">
-            <User className="w-4 h-4 text-white" />
+    <div className={cn(
+      'chatgpt-message',
+      isUser ? 'chatgpt-message-user' : 'chatgpt-message-assistant'
+    )}>
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="flex items-start space-x-4">
+          <div className={cn(
+            'chatgpt-avatar flex items-center justify-center flex-shrink-0',
+            isUser ? 'chatgpt-avatar-user' : 'chatgpt-avatar-assistant'
+          )}>
+            {isUser ? (
+              <User className="w-4 h-4 text-white" />
+            ) : (
+              <span className="text-white text-sm font-medium">G</span>
+            )}
           </div>
-        ) : (
-          <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-            <span className="text-white text-sm font-bold">G</span>
+          
+          <div className="flex-1">
+            <div className={cn(
+              'chatgpt-text',
+              isUser ? 'chatgpt-text-user' : 'chatgpt-text-assistant'
+            )}>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                {message.content}
+              </p>
+            </div>
+            
+            <div className="flex items-center space-x-1 mt-2 text-xs text-gray-400">
+              <span>{format(message.timestamp, 'HH:mm')}</span>
+              {isUser && getStatusIcon()}
+            </div>
           </div>
-        )}
-      </div>
-      
-      <div className={cn('flex flex-col max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-xl')}>
-        <div
-          className={cn(
-            'rounded-2xl px-4 py-3 break-words',
-            isUser
-              ? 'bg-blue-500 text-white rounded-br-md'
-              : 'bg-gray-100 text-gray-800 rounded-bl-md'
-          )}
-        >
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">
-            {message.content}
-          </p>
-        </div>
-        
-        <div
-          className={cn(
-            'flex items-center space-x-1 mt-1 text-xs text-gray-500',
-            isUser && 'justify-end'
-          )}
-        >
-          <span>{format(message.timestamp, 'HH:mm')}</span>
-          {isUser && getStatusIcon()}
         </div>
       </div>
     </div>

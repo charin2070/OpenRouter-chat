@@ -16,25 +16,51 @@ export function extractHarErrorsSafe(text: string): any[] {
   }
   
   export function extractHarErrors(har: any): any[] {
-    const entries = har?.log?.entries ?? [];
+    const entries = har?.log?.entries || [];
     const errors = [];
   
     for (const entry of entries) {
-      const { response, request } = entry;
-      if (!response || !request) continue;
+      const { request, response, _error } = entry;
   
-      const status = response.status;
-      if (status >= 400) {
+      // 1. HTTP статус >= 400
+      if (response?.status >= 400) {
         errors.push({
-          url: request.url,
-          status,
+          url: request?.url,
+          status: response.status,
           statusText: response.statusText,
-          errorMessage: response._error || response.content?.text?.slice(0, 200),
-          responseSnippet: response.content?.text?.slice(0, 300),
+          type: 'http',
+        });
+      }
+  
+      // 2. Встроенное поле _error
+      if (_error) {
+        errors.push({
+          url: request?.url,
+          error: _error,
+          type: 'network',
+        });
+      }
+  
+      // 3. Иногда AdBlock пишет это в response._error
+      if (response?._error) {
+        errors.push({
+          url: request?.url,
+          error: response._error,
+          type: 'network',
+        });
+      }
+  
+      // 4. Иногда ошибка есть в `timings.blocked == -1`
+      if (entry?.timings?.blocked === -1) {
+        errors.push({
+          url: request?.url,
+          error: 'Request blocked or failed (timing.blocked = -1)',
+          type: 'timing',
         });
       }
     }
   
     return errors;
   }
+  
   

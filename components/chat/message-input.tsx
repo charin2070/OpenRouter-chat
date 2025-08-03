@@ -41,7 +41,7 @@ export function MessageInput({ onSendMessage, disabled }: MessageInputProps) {
   };
 
   return (
-    <div className="border-t bg-white p-4">
+    <div className="chatgpt-input-container p-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-end space-x-2">
           <div className="flex-1 relative">
@@ -53,11 +53,11 @@ export function MessageInput({ onSendMessage, disabled }: MessageInputProps) {
                 adjustTextareaHeight();
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Type your message... (Enter to send, Shift+Enter for new line)"
+              placeholder="Message ChatGPT..."
               disabled={disabled}
               className={cn(
-                'min-h-[44px] max-h-[120px] resize-none pr-12 rounded-2xl border-2 transition-colors',
-                'focus:border-blue-500 focus:ring-0',
+                'chatgpt-input-box min-h-[44px] max-h-[120px] resize-none pr-12 transition-colors',
+                'focus:ring-0 focus:border-blue-500',
                 disabled && 'opacity-50 cursor-not-allowed'
               )}
               rows={1}
@@ -68,7 +68,7 @@ export function MessageInput({ onSendMessage, disabled }: MessageInputProps) {
             disabled={disabled || !message.trim()}
             size="default"
             className={cn(
-              'h-11 px-4 rounded-2xl bg-blue-500 hover:bg-blue-600 transition-all duration-200',
+              'chatgpt-send-button h-11 px-4 transition-all duration-200',
               'disabled:opacity-50 disabled:cursor-not-allowed'
             )}
           >
@@ -81,8 +81,8 @@ export function MessageInput({ onSendMessage, disabled }: MessageInputProps) {
           </Button>
         </div>
         
-        <div className="mt-2 text-xs text-gray-500 text-center">
-          Powered by Google Gemma 3b via OpenRouter
+        <div className="mt-2 text-xs text-gray-400 text-center">
+          ChatGPT can make mistakes. Consider checking important information.
         </div>
       </div>
     </div>

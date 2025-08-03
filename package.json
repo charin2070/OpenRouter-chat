@@ -1,15 +1,16 @@
 {
-  "name": "gemma-chat-app",
-  "version": "0.1.0",
+  "name": "chat-goai",
+  "version": "0.1.4",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "redev": "echo '🚀 Starting development server...' && echo '⏱️  Countdown: 20 seconds' && sleep 1 && echo '⏱️  Countdown: 19 seconds' && sleep 1 && echo '⏱️  Countdown: 18 seconds' && sleep 1 && echo '⏱️  Countdown: 17 seconds' && sleep 1 && echo '⏱️  Countdown: 16 seconds' && sleep 1 && echo '⏱️  Countdown: 15 seconds' && sleep 1 && echo '⏱️  Countdown: 14 seconds' && sleep 1 && echo '⏱️  Countdown: 13 seconds' && sleep 1 && echo '⏱️  Countdown: 12 seconds' && sleep 1 && echo '⏱️  Countdown: 11 seconds' && sleep 1 && echo '⏱️  Countdown: 10 seconds' && sleep 1 && echo '⏱️  Countdown: 9 seconds' && sleep 1 && echo '⏱️  Countdown: 8 seconds' && sleep 1 && echo '⏱️  Countdown: 7 seconds' && sleep 1 && echo '⏱️  Countdown: 6 seconds' && sleep 1 && echo '⏱️  Countdown: 5 seconds' && sleep 1 && echo '⏱️  Countdown: 4 seconds' && sleep 1 && echo '⏱️  Countdown: 3 seconds' && sleep 1 && echo '⏱️  Countdown: 2 seconds' && sleep 1 && echo '⏱️  Countdown: 1 second' && sleep 1 && echo '🎉 Opening browser...' && (open http://localhost:3000 || xdg-open http://localhost:3000 || start http://localhost:3000) && next dev -p 3000",
+    "redev": "powershell -Command \"Write-Host '🚀 Starting development server...' -ForegroundColor Green; Write-Host '⏱️  Countdown: 20 seconds' -ForegroundColor Yellow; for ($i=19; $i -gt 0; $i--) { Start-Sleep 1; Write-Host \"⏱️  Countdown: $i seconds\" -ForegroundColor Yellow }; Write-Host '🎉 Opening browser...' -ForegroundColor Green; Start-Process 'chrome' 'http://localhost:3000'; next dev -p 3000\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/core": "^0.40.0",
     "@hookform/resolvers": "^3.9.0",
     "@next/swc-wasm-nodejs": "13.5.1",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -48,11 +49,12 @@
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
-    "eslint": "8.49.0",
+    "eslint": "^9.32.0",
     "eslint-config-next": "13.5.1",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.446.0",
     "next": "13.5.1",
+    "next-auth": "^4.24.11",
     "next-themes": "^0.3.0",
     "postcss": "8.4.30",
     "react": "18.2.0",
@@ -67,6 +69,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2",
     "vaul": "^0.9.9",
+    "vercel": "^44.7.0",
     "zod": "^3.23.8"
   }
 }

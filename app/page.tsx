@@ -6,39 +6,60 @@ import { MessageList } from '@/components/chat/message-list';
 import { MessageInput } from '@/components/chat/message-input';
 import { ErrorMessage } from '@/components/chat/error-message';
 import { LogUploader } from '@/components/chat/log-uploader';
+import { Sidebar } from '@/components/chat/sidebar';
+import { SignIn } from '@/components/auth/sign-in';
+import { useAuth } from '@/lib/auth-context';
+import { Loading } from '@/components/ui/loading';
 
 export default function ChatPage() {
+  const { session, status, isLoading } = useAuth();
+  
   const {
     messages,
-    isLoading,
+    isLoading: chatLoading,
     error,
     sendMessage,
     clearChat,
     retryLastMessage,
   } = useChat();
 
-  return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      <ChatHeader 
-        messageCount={messages.length} 
-        onClearChat={clearChat} 
-      />
-      <LogUploader />
+  // Show loading state while checking authentication
+  if (isLoading || status === 'loading') {
+    return <Loading />;
+  }
 
-      <div className="flex-1 flex flex-col min-h-0">
-        <MessageList messages={messages} isTyping={isLoading} />
-        
-        {error && (
-          <ErrorMessage 
-            message={error} 
-            onRetry={retryLastMessage}
-          />
-        )}
-        
-        <MessageInput 
-          onSendMessage={sendMessage} 
-          disabled={isLoading} 
+  // Show sign-in page if not authenticated
+  if (status === 'unauthenticated' || !session) {
+    return <SignIn />;
+  }
+
+  // Show chat interface if authenticated
+  return (
+    <div className="chatgpt-container flex h-screen">
+      <Sidebar onNewChat={clearChat} />
+      
+      <div className="chatgpt-main flex flex-col flex-1">
+        <ChatHeader 
+          messageCount={messages.length} 
+          onClearChat={clearChat} 
         />
+        <LogUploader />
+
+        <div className="flex-1 flex flex-col min-h-0">
+          <MessageList messages={messages} isTyping={chatLoading} />
+          
+          {error && (
+            <ErrorMessage 
+              message={error} 
+              onRetry={retryLastMessage}
+            />
+          )}
+          
+          <MessageInput 
+            onSendMessage={sendMessage} 
+            disabled={chatLoading} 
+          />
+        </div>
       </div>
     </div>
   );

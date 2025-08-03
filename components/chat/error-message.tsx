@@ -11,16 +11,16 @@ interface ErrorMessageProps {
 
 export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
   return (
-    <Alert className="max-w-4xl mx-auto m-4 border-red-200 bg-red-50">
-      <AlertCircle className="h-4 w-4 text-red-600" />
-      <AlertDescription className="text-red-800 flex items-center justify-between">
+    <Alert className="max-w-4xl mx-auto m-4 border-red-500/20 bg-red-500/10">
+      <AlertCircle className="h-4 w-4 text-red-400" />
+      <AlertDescription className="text-red-300 flex items-center justify-between">
         <span>{message}</span>
         {onRetry && (
           <Button
             variant="outline"
             size="sm"
             onClick={onRetry}
-            className="ml-4 text-red-600 border-red-300 hover:bg-red-100"
+            className="ml-4 text-red-300 border-red-500/30 hover:bg-red-500/20"
           >
             <RefreshCw className="w-3 h-3 mr-1" />
             Retry
