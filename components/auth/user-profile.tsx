@@ -47,7 +47,7 @@ export function UserProfile() {
           className="text-red-400 hover:text-red-300 hover:bg-gray-700 cursor-pointer"
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Sign out</span>
+          <span>Выйти</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

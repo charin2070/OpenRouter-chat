@@ -5,8 +5,10 @@
 /* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind utilities;
 
+@import url('/fonts/alfa/alfa.css');
+
 :root {
-  --product-primary-color: #ffffff;
+  --product-primary-color: white;
   --product-glow-color: #24faef42;
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;

@@ -1,0 +1,144 @@
+.StyreneA-Thin-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 100;
+    font-style: normal;
+    font-stretch: normal;
+}
+
+.StyreneA-ThinItalic-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 100;
+    font-style: italic;
+    font-stretch: normal;
+}
+
+.StyreneA-Light-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 300;
+    font-style: normal;
+    font-stretch: normal;
+}
+
+.StyreneA-LightItalic-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 300;
+    font-style: italic;
+    font-stretch: normal;
+}
+
+.StyreneA-Regular-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 400;
+    font-style: normal;
+    font-stretch: normal;
+}
+
+.StyreneA-RegularItalic-Cy-Web {
+    font-family: "Styrene A LC Web";
+   font-weight: 400;
+    font-style: italic;
+    font-stretch: normal;
+}
+
+.StyreneA-Medium-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+}
+
+.StyreneA-MediumItalic-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 500;
+    font-style: italic;
+    font-stretch: normal;
+}
+
+.StyreneA-Bold-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 700;
+    font-style: normal;
+    font-stretch: normal;
+}
+
+.StyreneA-BoldItalic-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 700;
+    font-style: italic;
+    font-stretch: normal;
+}
+
+.StyreneA-Black-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 900;
+    font-style: normal;
+    font-stretch: normal;
+}
+
+.StyreneA-BlackItalic-Cy-Web {
+    font-family: "Styrene A LC Web";
+    font-weight: 900;
+    font-style: italic;
+    font-stretch: normal;
+}
+
+@font-face {
+	font-family: "Styrene A LC Web";
+	src: url("StyreneA-Medium-Cy-Web.eot");
+		src: url("StyreneA-Medium-Cy-Web.eot?#iefix") format("embedded-opentype"),
+		     url("StyreneA-Medium-Cy-Web.woff2") format("woff2"),
+		     url("StyreneA-Medium-Cy-Web.woff") format("woff");
+	font-weight: 500;
+	font-style: normal;
+	}
+
+@font-face {
+	font-family: "Styrene A LC Web";
+	src: url("StyreneA-MediumItalic-Cy-Web.eot");
+		src: url("StyreneA-MediumItalic-Cy-Web.eot?#iefix") format("embedded-opentype"),
+		     url("StyreneA-MediumItalic-Cy-Web.woff2") format("woff2"),
+		     url("StyreneA-MediumItalic-Cy-Web.woff") format("woff");
+	font-weight: 500;
+	font-style: italic;
+	}
+
+@font-face {
+	font-family: "Styrene A LC Web";
+	src: url("StyreneA-Bold-Cy-Web.eot");
+		src: url("StyreneA-Bold-Cy-Web.eot?#iefix") format("embedded-opentype"),
+		     url("StyreneA-Bold-Cy-Web.woff2") format("woff2"),
+		     url("StyreneA-Bold-Cy-Web.woff") format("woff");
+	font-weight: 700;
+	font-style: normal;
+	}
+
+@font-face {
+	font-family: "Styrene A LC Web";
+	src: url("StyreneA-BoldItalic-Cy-Web.eot");
+		src: url("StyreneA-BoldItalic-Cy-Web.eot?#iefix") format("embedded-opentype"),
+		     url("StyreneA-BoldItalic-Cy-Web.woff2") format("woff2"),
+		     url("StyreneA-BoldItalic-Cy-Web.woff") format("woff");
+	font-weight: 700;
+	font-style: italic;
+	}
+
+@font-face {
+	font-family: "Styrene A LC Web";
+	src: url("StyreneA-Black-Cy-Web.eot");
+		src: url("StyreneA-Black-Cy-Web.eot?#iefix") format("embedded-opentype"),
+		     url("StyreneA-Black-Cy-Web.woff2") format("woff2"),
+		     url("StyreneA-Black-Cy-Web.woff") format("woff");
+	font-weight: 900;
+	font-style: normal;
+	}
+
+@font-face {
+	font-family: "Styrene A LC Web";
+	src: url("StyreneA-BlackItalic-Cy-Web.eot");
+		src: url("StyreneA-BlackItalic-Cy-Web.eot?#iefix") format("embedded-opentype"),
+		     url("StyreneA-BlackItalic-Cy-Web.woff2") format("woff2"),
+		     url("StyreneA-BlackItalic-Cy-Web.woff") format("woff");
+	font-weight: 900;
+	font-style: italic;
+
+}

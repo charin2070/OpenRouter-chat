@@ -30,7 +30,7 @@ export async function sendMessageToProvider(
       model = 'google/gemma-2-9b-it:free';
       break;
     case 'mistral-medium':
-      model = 'mistral-medium';
+      model = 'mistralai/mistral-medium';
       break;
     default:
       throw new Error(`Unsupported provider: ${provider}`);

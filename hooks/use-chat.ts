@@ -18,147 +18,157 @@ export function useChat() {
   } = useAiProvider('google-gemma');
 
   const sendMessage = useCallback(async (content: string) => {
-    if (isLoading || isProviderLoading) return;
+    // retryCount нужен для контроля количества повторов
+    const send = async (content: string, retryCount = 0) => {
+      if (isLoading || isProviderLoading) return;
 
-    // Create user message
-    const userMessage: ChatMessage = {
-      id: Date.now().toString() + '-user',
-      role: 'user',
-      content,
-      timestamp: new Date(),
-      status: 'sending',
-    };
+      // Create user message
+      const userMessage: ChatMessage = {
+        id: Date.now().toString() + '-user',
+        role: 'user',
+        content,
+        timestamp: new Date(),
+        status: 'sending',
+      };
 
-    // Create assistant message placeholder
-    const assistantMessage: ChatMessage = {
-      id: Date.now().toString() + '-assistant',
-      content: '',
-      timestamp: new Date(),
-    };
+      // Create assistant message placeholder
+      const assistantMessage: ChatMessage = {
+        id: Date.now().toString() + '-assistant',
+        role: 'assistant',
+        content: '',
+        timestamp: new Date(),
+      };
 
-    setMessages(prev => [...prev, userMessage, assistantMessage]);
-    setIsLoading(true);
-
-    try {
-      // Update user message status to sent
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === userMessage.id 
-            ? { ...msg, status: 'sent' as const }
-            : msg
-        )
-      );
-
-      // Create abort controller for this request
-      abortControllerRef.current = new AbortController();
-
-      // Prepare messages for API
-      const apiMessages = [...messages, userMessage].map(msg => ({
-        role: msg.role,
-        content: msg.content,
-      }));
-
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          messages: apiMessages,
-          provider: selectedProvider 
-        }),
-        signal: abortControllerRef.current.signal,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Failed to send message');
-      }
-
-      if (!response.body) {
-        throw new Error('No response body received');
-      }
-
-      // Read the stream
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let accumulatedContent = '';
+      setMessages(prev => [...prev, userMessage, assistantMessage]);
+      setIsLoading(true);
 
       try {
-        while (true) {
-          const { done, value } = await reader.read();
-          
-          if (done) break;
+        // Update user message status to sent
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === userMessage.id 
+              ? { ...msg, status: 'sent' as const }
+              : msg
+          )
+        );
 
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split('\n');
+        // Create abort controller for this request
+        abortControllerRef.current = new AbortController();
 
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                if (data.content) {
-                  accumulatedContent += data.content;
-                  
-                  // Update assistant message with accumulated content
-                  setMessages(prev =>
-                    prev.map(msg =>
-                      msg.id === assistantMessage.id
-                        ? { ...msg, content: accumulatedContent }
-                        : msg
-                    )
-                  );
+        // Prepare messages for API
+        const apiMessages = [...messages, userMessage].map(msg => ({
+          role: msg.role,
+          content: msg.content,
+        }));
+
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            messages: apiMessages,
+            provider: selectedProvider 
+          }),
+          signal: abortControllerRef.current.signal,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error?.message || 'Failed to send message');
+        }
+
+        if (!response.body) {
+          throw new Error('No response body received');
+        }
+
+        // Read the stream
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedContent = '';
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  if (data.content) {
+                    accumulatedContent += data.content;
+                    
+                    // Update assistant message with accumulated content
+                    setMessages(prev =>
+                      prev.map(msg =>
+                        msg.id === assistantMessage.id
+                          ? { ...msg, content: accumulatedContent }
+                          : msg
+                      )
+                    );
+                  }
+                } catch (e) {
+                  // Skip invalid JSON
+                  continue;
                 }
-              } catch (e) {
-                // Skip invalid JSON
-                continue;
               }
             }
           }
+        } finally {
+          reader.releaseLock();
         }
+
+        if (!accumulatedContent.trim()) {
+          throw new Error('No response content received');
+        }
+
+      } catch (error) {
+        // Обработка ошибок
+        console.error('Error sending message:', error);
+        const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+
+        // Обработка fetch failed
+        if (errorMessage && errorMessage.toLowerCase().includes('fetch failed') && retryCount === 0) {
+          // Показать сообщение о попытке повтора
+          setMessages(prev =>
+            prev.map(msg =>
+              msg.id === assistantMessage.id
+                ? {
+                    ...msg,
+                    content: 'Запрос к модели оборвался. Пробую повторить....',
+                    status: 'error' as const
+                  }
+                : msg
+            )
+          );
+          // Повторить запрос один раз
+          setTimeout(() => {
+            // Удалить старые сообщения
+            setMessages(prev => prev.filter(msg => msg.id !== userMessage.id && msg.id !== assistantMessage.id));
+            send(content, 1);
+          }, 1200);
+          return;
+        }
+
+        // Обработка других ошибок
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === assistantMessage.id
+              ? { ...msg, content: errorMessage, status: 'error' as const }
+              : msg
+          )
+        );
       } finally {
-        reader.releaseLock();
+        setIsLoading(false);
       }
+    };
 
-      if (!accumulatedContent.trim()) {
-        throw new Error('No response content received');
-      }
-
-    } catch (error) {
-      console.error('Send message error:', error);
-      
-      if (error instanceof Error && error.name === 'AbortError') {
-        // Request was aborted, just clean up
-        setMessages(prev => prev.filter(msg => 
-          msg.id !== userMessage.id && msg.id !== assistantMessage.id
-        ));
-        return;
-      }
-
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      
-      // Update assistant message to show error as AI response with red styling
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === userMessage.id 
-            ? { ...msg, status: 'error' as const }
-            : msg.id === assistantMessage.id
-            ? { 
-                ...msg, 
-                content: `❌ **Ошибка:** ${errorMessage}\n\nПожалуйста, попробуйте еще раз или выберите другую модель.`,
-                status: 'error' as const
-              }
-            : msg
-        )
-      );
-
-      toast.error('Failed to send message', {
-        description: errorMessage,
-      });
-    } finally {
-      setIsLoading(false);
-      abortControllerRef.current = null;
-    }
+    send(content);
   }, [messages, isLoading, selectedProvider, isProviderLoading]);
 
   const clearChat = useCallback(() => {

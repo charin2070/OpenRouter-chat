@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, MessageSquare, Trash2 } from 'lucide-react';
 import { AiProviderDropdown } from './ai-provider-dropdown';
 import { AIProvider } from '@/lib/types';
+import AddDataButton from '@/components/ui/add-data-button';
 
 interface SidebarProps {
   onNewChat: () => void;
@@ -16,14 +17,7 @@ export function Sidebar({ onNewChat, selectedProvider, onProviderChange }: Sideb
     <div className="chatgpt-sidebar flex flex-col h-full">
       {/* New Chat Button */}
       <div className="p-3">
-        <Button
-          onClick={onNewChat}
-          className="chatgpt-new-chat-butto n w-full justify-start h-10 px-3"
-          variant="outline"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New chat
-        </Button>
+        <AddDataButton onClick={onNewChat} />
       </div>
 
       {/* AI Provider Selection */}
@@ -52,4 +46,4 @@ export function Sidebar({ onNewChat, selectedProvider, onProviderChange }: Sideb
       </div>
     </div>
   );
-} 
+}

@@ -10,6 +10,7 @@ import { Sidebar } from '@/components/chat/sidebar';
 import { SignIn } from '@/components/auth/sign-in';
 import { useAuth } from '@/lib/auth-context';
 import { Loading } from '@/components/ui/loading';
+import QueryPanel from '@/components/chat/query-panel';
 
 export default function ChatPage() {
   const { session, status, isLoading } = useAuth();
@@ -17,7 +18,6 @@ export default function ChatPage() {
   const {
     messages,
     isLoading: chatLoading,
-    error,
     selectedProvider,
     setSelectedProvider,
     sendMessage,
@@ -38,34 +38,11 @@ export default function ChatPage() {
   // Show chat interface if authenticated
   return (
     <div className="chatgpt-container flex h-screen">
-      <Sidebar 
-        onNewChat={clearChat} 
-        selectedProvider={selectedProvider}
-        onProviderChange={setSelectedProvider}
-      />
-      
       <div className="chatgpt-main flex flex-col flex-1">
-        <ChatHeader 
-          messageCount={messages.length} 
-          onClearChat={clearChat}
-          selectedProvider={selectedProvider}
-        />
-        <LogUploader />
 
         <div className="flex-1 flex flex-col min-h-0">
           <MessageList messages={messages} isTyping={chatLoading} />
-          
-          {error && (
-            <ErrorMessage 
-              message={error} 
-              onRetry={retryLastMessage}
-            />
-          )}
-          
-          <MessageInput 
-            onSendMessage={sendMessage} 
-            disabled={chatLoading} 
-          />
+          <QueryPanel placeholder='Добавьте детали...' onSendMessage={sendMessage} />
         </div>
       </div>
     </div>

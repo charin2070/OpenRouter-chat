@@ -4,6 +4,7 @@ import { ChatMessage } from '@/lib/types';
 import { MessageBubble } from './message-bubble';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -26,17 +27,26 @@ export function MessageList({ messages, isTyping }: MessageListProps) {
     <ScrollArea ref={scrollAreaRef} className="flex-1">
       <div className="max-w-4xl mx-auto">
         {messages.length === 0 ? (
-          <div className="chatgpt-welcome flex flex-col items-center justify-center h-64 text-center px-4">
-            <div className="chatgpt-welcome-icon flex items-center justify-center mb-4">
-              <span className="text-white text-xl font-bold">G</span>
-            </div>
-            <h3 className="text-2xl font-semibold mb-2">
-              Chat GoAI
-            </h3>
-            <p className="text-gray-400 max-w-md">
-              Я могу сочинить симфонию и превратить холст в шедевр.
-              Но займусь твоими проблемами.
-            </p>
+          <div className="flex flex-row items-center justify-center h-100 text-center px-4">
+        
+              <Image
+                src="/favicon.svg"
+                alt="Chat GoAI Logo"
+                width={68}
+                height={68}
+                priority
+              />
+     
+            <p className="text-gray-400 max-w-sm font-light text-md text-left">
+              Я могу сочинить симфонию и превратить холст в шедевр, но вы
+              <span
+                className="text-gray-200 max-w-md font-bold text-md"
+                style={{ filter: 'blur(6px)', cursor: 'pointer' }}
+                title="Содержимое скрыто"
+              >выебу
+              </span>
+              твои логи
+                 </p>
           </div>
         ) : (
           messages.map((message) => (
