@@ -42,7 +42,12 @@ export default function ChatPage() {
 
         <div className="flex-1 flex flex-col min-h-0">
           <MessageList messages={messages} isTyping={chatLoading} />
-          <QueryPanel placeholder='Добавьте детали...' onSendMessage={sendMessage} />
+          <QueryPanel 
+            placeholder='Добавьте детали...'
+            onSendMessage={sendMessage}
+            selectedProvider={selectedProvider}
+            onProviderChange={setSelectedProvider}
+          />
         </div>
       </div>
     </div>

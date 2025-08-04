@@ -27,10 +27,10 @@ export async function sendMessageToProvider(
   let model: string;
   switch (provider) {
     case 'google-gemma':
-      model = 'google/gemma-2-9b-it:free';
+      model = process.env.AI_OPENROUTER_MODEL || 'google/gemma-2-9b-it:free';
       break;
     case 'mistral-medium':
-      model = 'mistralai/mistral-medium';
+      model = process.env.AI_MISTRAL_MODEL || 'mistralai/mistral-medium';
       break;
     default:
       throw new Error(`Unsupported provider: ${provider}`);

@@ -1,11 +1,11 @@
-'use_client';
+'use client';
 
 import React from 'react';
 import { useState } from 'react';
 
 export function LocalSettings() {
     // Default settings
-    const defaultSettings = { activeProvider: 'google-gemma', theme: 'light', language: 'rus', maxTokens: 1000, temperature: 0.7  };
+            const defaultSettings = { activeProvider: 'google-gemma', theme: 'light', language: 'rus', maxTokens: 1000, temperature: 0.7  };
 
     // Check and apply settings from localStorage or set default settings
     const localStorageData = localStorage.getItem('settings');

@@ -7,7 +7,7 @@ import { UserProfile } from '@/components/auth/user-profile';
 
 // Define the QueryPanel component
 
-const QueryPanel = ({ onSendMessage, placeholder }: { onSendMessage: (message: string) => void; placeholder?: string }) => {
+const QueryPanel = ({ onSendMessage, placeholder, selectedProvider, onProviderChange }: { onSendMessage: (message: string) => void; placeholder?: string; selectedProvider: string; onProviderChange: (value: string) => void; }) => {
   const [inputValue, setInputValue] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -37,13 +37,13 @@ const QueryPanel = ({ onSendMessage, placeholder }: { onSendMessage: (message: s
       </div>
       
       <div className="flex items-center">
-            <Select defaultValue="grok-3">
+            <Select value={selectedProvider} onValueChange={onProviderChange}>
               <SelectTrigger className="h-10 px-3 py-2 text-sm rounded-full border border-gray-700 bg-black bg-opacity-60 backdrop-blur-md hover:bg-gray-700 hover:bg-opacity-80 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600 w-fit gap-2 text-gray-300 transition-all duration-200 ease-in-out">
-                <SelectValue placeholder="Grok 3" />
+                <SelectValue placeholder="Mistral Medium" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="grok-4-heavy">Gemma 3</SelectItem>
-                <SelectItem value="grok-3">Mistral Medium</SelectItem>
+                <SelectItem value="google-gemma">Gemma 3</SelectItem>
+                <SelectItem value="mistral-medium">Mistral Medium</SelectItem>
               </SelectContent>
             </Select>
    

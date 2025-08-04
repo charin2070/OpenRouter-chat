@@ -1,8 +1,8 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { sendMessageToProvider, parseStreamChunk } from '@/lib/openrouter';
+import { sendMessageToMistral, parseMistralStreamChunk } from '@/lib/mistral';
 import { AIProvider } from '@/lib/types';
-import { getModels } from '@/lib/mistral';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Валидация провайдера
     const validProviders: AIProvider[] = ['google-gemma', 'mistral-medium'];
     if (!validProviders.includes(provider)) {
       return NextResponse.json(
@@ -24,7 +23,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const stream = await sendMessageToProvider(messages, provider);
+    let stream: ReadableStream<Uint8Array>;
+    let parseFn: (chunk: string) => string | null;
+
+    if (provider === 'mistral-medium') {
+      stream = await sendMessageToMistral(messages);
+      parseFn = parseMistralStreamChunk;
+    } else {
+      stream = await sendMessageToProvider(messages, provider);
+      parseFn = parseStreamChunk;
+    }
+
     const reader = stream.getReader();
     const decoder = new TextDecoder();
 
@@ -34,15 +43,12 @@ export async function POST(request: NextRequest) {
           try {
             while (true) {
               const { done, value } = await reader.read();
-              
               if (done) {
                 controller.close();
                 break;
               }
-
               const chunk = decoder.decode(value, { stream: true });
-              const content = parseStreamChunk(chunk);
-              
+              const content = parseFn(chunk);
               if (content) {
                 controller.enqueue(
                   new TextEncoder().encode(`data: ${JSON.stringify({ content })}\n\n`)
@@ -60,9 +66,9 @@ export async function POST(request: NextRequest) {
 
     return new Response(customReadable, {
       headers: {
-        'Content-Type': 'text/stream-event',
+        'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     });
   } catch (error) {
