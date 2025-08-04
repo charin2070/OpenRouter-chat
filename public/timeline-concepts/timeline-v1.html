@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservices Events Timeline</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: #4CAF50;
+        }
+
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .search-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            width: 100%;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .search-bar i {
+            color: #aaa;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: #4CAF50;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            left: 30px;
+            margin-left: -2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 60px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            left: 22px;
+            top: 5px;
+            z-index: 1;
+            border: 3px solid #1a2a6c;
+        }
+
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 18px;
+            color: #4CAF50;
+        }
+
+        .event-time {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .event-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .event-description {
+            font-size: 14px;
+            color: #ddd;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .event-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .status {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .status.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+        }
+
+        .status.warning {
+            background: rgba(255, 152, 0, 0.2);
+            color: #FF9800;
+        }
+
+        .status.info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .filters {
+                flex-wrap: wrap;
+            }
+            
+            .filter-btn {
+                min-width: 45%;
+            }
+            
+            header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-microchip"></i>
+                <h1>Microservices Monitor</h1>
+            </div>
+            <i class="fas fa-bell"></i>
+        </header>
+
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search events...">
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active">All Events</button>
+            <button class="filter-btn">Errors</button>
+            <button class="filter-btn">Warnings</button>
+            <button class="filter-btn">Success</button>
+        </div>
+
+        <div class="timeline">
+            <!-- Event 1 -->
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <div class="service-name">User Service</div>
+                        <div class="event-time">10:45 AM</div>
+                    </div>
+                    <div class="event-title">User registration completed</div>
+                    <div class="event-description">New user registered with email user@example.com. Profile created successfully.</div>
+                    <div class="event-meta">
+                        <div class="status success">Success</div>
+                        <div>Duration: 120ms</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event 2 -->
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <div class="service-name">Payment Service</div>
+                        <div class="event-time">10:38 AM</div>
+                    </div>
+                    <div class="event-title">Payment processing failed</div>
+                    <div class="event-description">Payment transaction failed due to insufficient funds. Transaction ID: PAY-789456123</div>
+                    <div class="event-meta">
+                        <div class="status error">Error</div>
+                        <div>Duration: 45ms</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event 3 -->
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <div class="service-name">Order Service</div>
+                        <div class="event-time">10:32 AM</div>
+                    </div>
+                    <div class="event-title">Order placed successfully</div>
+                    <div class="event-description">Order #ORD-789456 placed for 3 items. Total amount: $124.99</div>
+                    <div class="event-meta">
+                        <div class="status success">Success</div>
+                        <div>Duration: 85ms</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event 4 -->
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <div class="service-name">Inventory Service</div>
+                        <div class="event-time">10:25 AM</div>
+                    </div>
+                    <div class="event-title">Low stock alert</div>
+                    <div class="event-description">Product ID: PROD-12345 stock level is below threshold (5 units remaining)</div>
+                    <div class="event-meta">
+                        <div class="status warning">Warning</div>
+                        <div>Duration: 32ms</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event 5 -->
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <div class="service-name">Notification Service</div>
+                        <div class="event-time">10:15 AM</div>
+                    </div>
+                    <div class="event-title">Email notification sent</div>
+                    <div class="event-description">Order confirmation email sent to user@example.com. Template: order_confirmation</div>
+                    <div class="event-meta">
+                        <div class="status info">Info</div>
+                        <div>Duration: 67ms</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Showing 5 of 24 events | Last updated: 10:45 AM</p>
+        </div>
+    </div>
+
+    <script>
+        // Simple filter functionality
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // In a real app, this would filter the timeline items
+                // For this demo, we'll just show an alert
+                const filter = this.textContent;
+                if (filter !== 'All Events') {
+                    alert(`Filtering by: ${filter} (In a real app, this would filter the timeline)`);
+                }
+            });
+        });
+
+        // Add hover effect to timeline items
+        document.querySelectorAll('.timeline-content').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
+
+<!-- 
+Features of this UI Design
+Modern Mobile-First Design:
+
+Clean gradient background with dark theme for better readability
+Responsive layout that works on all mobile devices
+Card-based timeline items with subtle hover effects
+Vertical Timeline Visualization:
+
+Clear timeline with connecting line
+Color-coded markers for different event types
+Consistent spacing and alignment
+Event Details:
+
+Service name with color coding
+Timestamp for each event
+Event title and description
+Status indicators (success, error, warning, info)
+Performance metrics (duration)
+Filtering Capabilities:
+
+Category filters (All, Errors, Warnings, Success)
+Search functionality
+Visual feedback for active filters
+User Experience Enhancements:
+
+Hover effects on timeline items
+Clear visual hierarchy
+Intuitive navigation
+Responsive design for all screen sizes
+The design uses a dark theme with accent colors to highlight important information, making it easy to scan through events while maintaining a professional appearance suitable for monitoring microservices. -->

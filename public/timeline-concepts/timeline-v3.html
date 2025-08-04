@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal Data Collector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dropzone {
+            border: 2px dashed #cbd5e0;
+            transition: all 0.3s ease;
+        }
+        .dropzone.active {
+            border-color: #4f46e5;
+            background-color: #eef2ff;
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .source-tab {
+            transition: all 0.2s ease;
+        }
+        .source-tab:hover:not(.active) {
+            background-color: #f3f4f6;
+        }
+        .waveform {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .waveform-bar {
+            background-color: #4f46e5;
+            width: 3px;
+            border-radius: 3px;
+            animation: equalize 1.5s infinite ease-in-out;
+            animation-delay: calc(var(--delay) * 0.1s);
+        }
+        @keyframes equalize {
+            0%, 100% { height: 40%; }
+            50% { height: 100%; }
+        }
+        .recording {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-indigo-800">Multimodal Data Collector</h1>
+            <p class="text-gray-600 mt-2">Fast submission of service logs, chats, voice messages, emails and monitoring data for cloud analysis</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <!-- Source Tabs -->
+            <div class="flex border-b border-gray-200 overflow-x-auto">
+                <button class="source-tab active px-6 py-3 font-medium text-sm flex items-center space-x-2 text-indigo-600 bg-indigo-50" data-source="logs">
+                    <i class="fas fa-server"></i>
+                    <span>Service Logs</span>
+                </button>
+                <button class="source-tab px-6 py-3 font-medium text-sm flex items-center space-x-2 text-gray-600" data-source="chats">
+                    <i class="fas fa-comments"></i>
+                    <span>Work Chats</span>
+                </button>
+                <button class="source-tab px-6 py-3 font-medium text-sm flex items-center space-x-2 text-gray-600" data-source="voice">
+                    <i class="fas fa-microphone"></i>
+                    <span>Voice Notes</span>
+                </button>
+                <button class="source-tab px-6 py-3 font-medium text-sm flex items-center space-x-2 text-gray-600" data-source="email">
+                    <i class="fas fa-envelope"></i>
+                    <span>Emails</span>
+                </button>
+                <button class="source-tab px-6 py-3 font-medium text-sm flex items-center space-x-2 text-gray-600" data-source="monitoring">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Monitoring</span>
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-6">
+                <!-- Logs Panel (Default Visible) -->
+                <div id="logs-panel" class="source-panel">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Log Source</label>
+                        <select class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option>Application Server</option>
+                            <option>Database Server</option>
+                            <option>Web Server</option>
+                            <option>Mobile App</option>
+                            <option>IoT Device</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Log Time Range</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">From</label>
+                                <input type="datetime-local" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">To</label>
+                                <input type="datetime-local" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Log Severity</label>
+                        <div class="flex flex-wrap gap-2">
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" checked>
+                                <span class="ml-2 text-sm text-gray-700">DEBUG</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" checked>
+                                <span class="ml-2 text-sm text-gray-700">INFO</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" checked>
+                                <span class="ml-2 text-sm text-gray-700">WARN</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" checked>
+                                <span class="ml-2 text-sm text-gray-700">ERROR</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" checked>
+                                <span class="ml-2 text-sm text-gray-700">FATAL</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors">
+                            Collect and Send Logs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chats Panel -->
+                <div id="chats-panel" class="source-panel hidden">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Chat Platform</label>
+                        <select class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option>Slack</option>
+                            <option>Microsoft Teams</option>
+                            <option>Discord</option>
+                            <option>WhatsApp Business</option>
+                            <option>Telegram</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Drag & Drop Chat Files</label>
+                        <div class="dropzone rounded-lg p-8 text-center cursor-pointer">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-600 mb-1">Drag & drop your chat export files here</p>
+                            <p class="text-gray-400 text-sm">or click to browse files (JSON, CSV, TXT)</p>
+                            <input type="file" class="hidden" multiple>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Or paste chat content directly</label>
+                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-32" placeholder="Paste chat content here..."></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors">
+                            Submit Chat Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Voice Panel -->
+                <div id="voice-panel" class="source-panel hidden">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Record New Voice Message</label>
+                        <div class="flex items-center justify-center space-x-4">
+                            <button id="record-btn" class="recording-btn bg-red-500 text-white p-4 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button id="stop-btn" class="bg-gray-200 text-gray-700 p-4 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors" disabled>
+                                <i class="fas fa-stop"></i>
+                            </button>
+                            <div id="waveform" class="waveform hidden">
+                                <div class="waveform-bar" style="--delay: 1"></div>
+                                <div class="waveform-bar" style="--delay: 2"></div>
+                                <div class="waveform-bar" style="--delay: 3"></div>
+                                <div class="waveform-bar" style="--delay: 4"></div>
+                                <div class="waveform-bar" style="--delay: 5"></div>
+                                <div class="waveform-bar" style="--delay: 6"></div>
+                                <div class="waveform-bar" style="--delay: 7"></div>
+                                <div class="waveform-bar" style="--delay: 8"></div>
+                                <div class="waveform-bar" style="--delay: 9"></div>
+                                <div class="waveform-bar" style="--delay: 10"></div>
+                            </div>
+                            <span id="timer" class="text-gray-600 font-mono hidden">00:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Or Upload Voice Files</label>
+                        <div class="dropzone rounded-lg p-8 text-center cursor-pointer">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-600 mb-1">Drag & drop your voice files here</p>
+                            <p class="text-gray-400 text-sm">or click to browse files (MP3, WAV, OGG)</p>
+                            <input type="file" class="hidden" accept="audio/*" multiple>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Add Context (Optional)</label>
+                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-24" placeholder="Add any context about this voice message..."></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors">
+                            Send Voice Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Email Panel -->
+                <div id="email-panel" class="source-panel hidden">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Connect Email Account</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button class="border border-gray-300 rounded-md p-4 hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fab fa-google text-red-500 text-xl"></i>
+                                    <span>Gmail</span>
+                                </div>
+                            </button>
+                            <button class="border border-gray-300 rounded-md p-4 hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fab fa-microsoft text-blue-500 text-xl"></i>
+                                    <span>Outlook</span>
+                                </div>
+                            </button>
+                            <button class="border border-gray-300 rounded-md p-4 hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-envelope text-gray-500 text-xl"></i>
+                                    <span>IMAP/SMTP</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Or Upload Email Files</label>
+                        <div class="dropzone rounded-lg p-8 text-center cursor-pointer">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-600 mb-1">Drag & drop your email files here</p>
+                            <p class="text-gray-400 text-sm">or click to browse files (EML, MSG, PST)</p>
+                            <input type="file" class="hidden" multiple>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Selection Criteria</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">From Date</label>
+                                <input type="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">To Date</label>
+                                <input type="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Sender Contains</label>
+                                <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="e.g., @company.com">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Subject Contains</label>
+                                <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="e.g., 'urgent', 'meeting'">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors">
+                            Collect and Send Emails
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Monitoring Panel -->
+                <div id="monitoring-panel" class="source-panel hidden">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Connect Monitoring System</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button class="border border-gray-300 rounded-md p-4 hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-chart-line text-purple-500 text-xl"></i>
+                                    <span>Prometheus</span>
+                                </div>
+                            </button>
+                            <button class="border border-gray-300 rounded-md p-4 hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-chart-bar text-blue-500 text-xl"></i>
+                                    <span>Grafana</span>
+                                </div>
+                            </button>
+                            <button class="border border-gray-300 rounded-md p-4 hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-heartbeat text-red-500 text-xl"></i>
+                                    <span>New Relic</span>
+                                </div>
+                            </button>
+                            <button class="border border-gray-300 rounded-md p-4 hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-cloud text-yellow-500 text-xl"></i>
+                                    <span>Datadog</span>
+                                </div>
+                            </button>
+                            <button class="border border-gray-300 rounded-md p-4 hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-bolt text-green-500 text-xl"></i>
+                                    <span>Zabbix</span>
+                                </div>
+                            </button>
+                            <button class="border border-gray-300 rounded-md p-4 hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-plug text-gray-500 text-xl"></i>
+                                    <span>Custom API</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Or Upload Monitoring Data</label>
+                        <div class="dropzone rounded-lg p-8 text-center cursor-pointer">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-600 mb-1">Drag & drop your monitoring data files here</p>
+                            <p class="text-gray-400 text-sm">or click to browse files (JSON, CSV, XML)</p>
+                            <input type="file" class="hidden" multiple>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Data Collection Parameters</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Time Range</label>
+                                <select class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option>Last 1 hour</option>
+                                    <option>Last 4 hours</option>
+                                    <option>Last 24 hours</option>
+                                    <option>Last 7 days</option>
+                                    <option>Custom range...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Metrics</label>
+                                <select class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" multiple>
+                                    <option>CPU Usage</option>
+                                    <option>Memory Usage</option>
+                                    <option>Disk I/O</option>
+                                    <option>Network Traffic</option>
+                                    <option>Error Rates</option>
+                                    <option>Response Times</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors">
+                            Collect and Send Monitoring Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Submissions -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Submissions</h2>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-server text-indigo-600"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Service Logs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">App Server #3</div>
+                                    <div class="text-sm text-gray-500">production-web-03</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">4.2 MB</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        Processed
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    15 minutes ago
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <a href="#" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-comments text-blue-600"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Work Chat</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Slack</div>
+                                    <div class="text-sm text-gray-500">#support-team</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">1.8 MB</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                        Analyzing
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    42 minutes ago
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <a href="#" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-red-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-microphone text-red-600"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Voice Message</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Customer Call</div>
+                                    <div class="text-sm text-gray-500">Case #45892</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">3.7 MB</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        Transcribing
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    1 hour ago
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <a href="#" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching
+        document.querySelectorAll('.source-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and panels
+                document.querySelectorAll('.source-tab').forEach(t => t.classList.remove('active', 'text-indigo-600', 'bg-indigo-50'));
+                document.querySelectorAll('.source-tab').forEach(t => t.classList.add('text-gray-600'));
+                document.querySelectorAll('.source-panel').forEach(p => p.classList.add('hidden'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active', 'text-indigo-600', 'bg-indigo-50');
+                tab.classList.remove('text-gray-600');
+                
+                // Show corresponding panel
+                const panelId = tab.getAttribute('data-source') + '-panel';
+                document.getElementById(panelId).classList.remove('hidden');
+            });
+        });
+
+        // Dropzone Interactions
+        document.querySelectorAll('.dropzone').forEach(dropzone => {
+            const fileInput = dropzone.querySelector('input[type="file"]');
+            
+            dropzone.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('active');
+            });
+            
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('active');
+            });
+            
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('active');
+                fileInput.files = e.dataTransfer.files;
+                updateDropzoneText(dropzone, e.dataTransfer.files);
+            });
+            
+            fileInput.addEventListener('change', () => {
+                updateDropzoneText(dropzone, fileInput.files);
+            });
+        });
+        
+        function updateDropzoneText(dropzone, files) {
+            if (files.length > 0) {
+                const fileNames = Array.from(files).map(file => file.name).join(', ');
+                const infoText = dropzone.querySelector('p:first-of-type');
+                const subText = dropzone.querySelector('p:last-of-type');
+                
+                infoText.textContent = files.length === 1 ? 
+                    `File ready: ${files[0].name}` : 
+                    `${files.length} files ready`;
+                
+                subText.textContent = files.length === 1 ? 
+                    `${formatFileSize(files[0].size)}` : 
+                    `${formatFileSize(Array.from(files).reduce((sum, file) => sum + file.size, 0))} total`;
+            }
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Voice Recording Simulation
+        const recordBtn = document.getElementById('record-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const waveform = document.getElementById('waveform');
+        const timer = document.getElementById('timer');
+        
+        let recordingInterval;
+        let seconds = 0;
+        
+        recordBtn.addEventListener('click', () => {
+            // Simulate recording start
+            recordBtn.classList.add('recording');
+            stopBtn.disabled = false;
+            waveform.classList.remove('hidden');
+            timer.classList.remove('hidden');
+            
+            // Start timer
+            seconds = 0;
+            updateTimer();
+            recordingInterval = setInterval(updateTimer, 1000);
+        });
+        
+        stopBtn.addEventListener('click', () => {
+            // Simulate recording stop
+            recordBtn.classList.remove('recording');
+            stopBtn.disabled = true;
+            waveform.classList.add('hidden');
+            clearInterval(recordingInterval);
+        });
+        
+        function updateTimer() {
+            seconds++;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            timer.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // Multi-select for monitoring metrics
+        document.querySelectorAll('select[multiple]').forEach(select => {
+            select.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                
+                const option = e.target;
+                if (option.tagName === 'OPTION') {
+                    option.selected = !option.selected;
+                    
+                    // Trigger change event
+                    const event = new Event('change');
+                    select.dispatchEvent(event);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

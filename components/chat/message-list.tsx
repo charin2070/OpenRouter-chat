@@ -1,10 +1,13 @@
 'use client';
 
+'use client';
+
 import { ChatMessage } from '@/lib/types';
 import { MessageBubble } from './message-bubble';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { useAuth } from '@/lib/auth-context';
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -12,6 +15,8 @@ interface MessageListProps {
 }
 
 export function MessageList({ messages, isTyping }: MessageListProps) {
+  const { session } = useAuth();
+  const userAvatar = session?.user?.image || null;
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,9 +54,11 @@ export function MessageList({ messages, isTyping }: MessageListProps) {
                  </p>
           </div>
         ) : (
-          messages.map((message) => (
-            <MessageBubble key={message.id} message={message} />
-          ))
+          <div className="flex flex-col gap-4 p-4">
+            {messages.map((message) => (
+              <MessageBubble key={message.id} message={message} userAvatar={userAvatar} />
+            ))}
+          </div>
         )}
         
         {isTyping && (

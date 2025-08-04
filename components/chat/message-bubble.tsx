@@ -1,80 +1,92 @@
 'use client';
 
+'use client';
+
 import { ChatMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Check, CheckCheck, AlertCircle, User } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface MessageBubbleProps {
   message: ChatMessage;
+  userAvatar: string | null;
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, userAvatar }: MessageBubbleProps) {
   const isUser = message.role === 'user';
   const isError = message.status === 'error';
-  
+
   const getStatusIcon = () => {
     switch (message.status) {
       case 'sending':
-        return <Check className="w-3 h-3 text-gray-400" />;
+        return <Check className="w-4 h-4 text-gray-400" />;
       case 'sent':
-        return <CheckCheck className="w-3 h-3 text-blue-500" />;
+        return <CheckCheck className="w-4 h-4 text-blue-400" />;
       case 'error':
-        return <AlertCircle className="w-3 h-3 text-red-500" />;
+        return <AlertCircle className="w-4 h-4 text-red-400" />;
       default:
         return null;
     }
   };
 
+  const avatar = (
+    <Avatar className={cn('flex-shrink-0 w-10 h-10 rounded-full', isError && !isUser && 'border-2 border-red-500')}>
+      <AvatarImage src={isUser ? userAvatar || '' : ''} alt={isUser ? 'User' : 'AI'} />
+      <AvatarFallback className={cn(
+        'text-white font-bold',
+        isUser ? 'bg-blue-500' : 'bg-gray-700',
+        isError && !isUser && 'bg-red-800'
+      )}>
+        {isUser ? <User size={20} /> : 'AI'}
+      </AvatarFallback>
+    </Avatar>
+  );
+
   return (
-    <div className={cn(
-      'chatgpt-message',
-      isUser ? 'chatgpt-message-user' : 'chatgpt-message-assistant',
-      isError && !isUser && 'chatgpt-message-error'
-    )}>
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        <div className="flex items-start space-x-4">
-          <div className={cn(
-            'chatgpt-avatar flex items-center justify-center flex-shrink-0',
-            isUser ? 'chatgpt-avatar-user' : 'chatgpt-avatar-assistant',
-            isError && !isUser && 'chatgpt-avatar-error'
+    <div className={cn('flex items-start gap-4 w-full', isUser ? 'justify-end' : 'justify-start')}>
+      {!isUser && avatar}
+      <div className={cn(
+        'relative max-w-xl w-full rounded-xl p-4 shadow-lg transition-all duration-300 hover:shadow-2xl',
+        isUser
+          ? 'bg-blue-900/50 border border-blue-800/50'
+          : 'bg-gray-800/50 border border-gray-700/50',
+        isError && !isUser && 'bg-red-900/50 border-red-800/50'
+      )}>
+        <div className="flex items-center justify-between mb-2">
+          <span className={cn(
+            'font-semibold text-sm',
+            isUser ? 'text-blue-300' : 'text-gray-300',
+            isError && !isUser && 'text-red-300'
           )}>
-            {isUser ? (
-              <User className="w-4 h-4 text-white" />
-            ) : (
-              <span className={cn(
-                "text-white text-sm font-medium",
-                isError && "text-red-200"
-              )}>
-                {isError ? '❌' : 'G'}
-              </span>
-            )}
-          </div>
-          
-          <div className="flex-1">
-            <div className={cn(
-              'chatgpt-text',
-              isUser ? 'chatgpt-text-user' : 'chatgpt-text-assistant',
-              isError && !isUser && 'chatgpt-text-error'
-            )}>
-              <p className={cn(
-                "text-sm leading-relaxed whitespace-pre-wrap",
-                isError && !isUser && "text-red-200"
-              )}>
-                {message.content}
-              </p>
-            </div>
-            
-            <div className="flex items-center space-x-1 mt-2 text-xs text-gray-400">
-              <span>{format(message.timestamp, 'HH:mm')}</span>
-              {isUser && getStatusIcon()}
-              {isError && !isUser && (
-                <span className="text-red-400 text-xs">Ошибка</span>
-              )}
-            </div>
-          </div>
+            {isUser ? 'Вы' : 'AI Ассистент'}
+          </span>
+          <span className="text-xs text-gray-500">
+            {format(message.timestamp, 'HH:mm')}
+          </span>
         </div>
+
+        <p className={cn(
+          'text-sm leading-relaxed whitespace-pre-wrap',
+          isUser ? 'text-gray-200' : 'text-gray-300',
+          isError && !isUser && 'text-red-300'
+        )}>
+          {message.content}
+        </p>
+
+        {isUser && (
+          <div className="absolute bottom-2 right-3">
+            {getStatusIcon()}
+          </div>
+        )}
+
+        {isError && !isUser && (
+          <div className="mt-2 text-xs text-red-400">
+            Произошла ошибка при получении ответа.
+          </div>
+        )}
       </div>
+      {isUser && avatar}
     </div>
   );
 }

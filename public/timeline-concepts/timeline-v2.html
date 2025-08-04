@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservices Timeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Pulse animation for real-time events */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Custom timeline line */
+        .timeline-line {
+            position: absolute;
+            left: 28px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6, #ec4899);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg overflow-hidden">
+        <!-- Header -->
+        <div class="bg-indigo-600 text-white p-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-server text-xl"></i>
+                <h1 class="text-xl font-bold">Microservices Timeline</h1>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button class="p-1 rounded-full bg-indigo-500">
+                    <i class="fas fa-search text-sm"></i>
+                </button>
+                <button class="p-1 rounded-full bg-indigo-500">
+                    <i class="fas fa-filter text-sm"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Status Bar -->
+        <div class="bg-gray-100 p-3 flex items-center justify-between text-xs">
+            <div class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                <span>Connected</span>
+            </div>
+            <div class="text-gray-500">
+                <span id="current-time">Loading...</span>
+            </div>
+            <div class="flex items-center space-x-1">
+                <i class="fas fa-wifi text-gray-500"></i>
+                <i class="fas fa-battery-three-quarters text-gray-500"></i>
+            </div>
+        </div>
+        
+        <!-- Service Filters -->
+        <div class="p-3 bg-white border-b overflow-x-auto">
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 bg-indigo-600 text-white rounded-full text-xs whitespace-nowrap">
+                    All Services
+                </button>
+                <button class="px-3 py-1 bg-gray-200 rounded-full text-xs whitespace-nowrap">
+                    Auth Service
+                </button>
+                <button class="px-3 py-1 bg-gray-200 rounded-full text-xs whitespace-nowrap">
+                    Payment Service
+                </button>
+                <button class="px-3 py-1 bg-gray-200 rounded-full text-xs whitespace-nowrap">
+                    Order Service
+                </button>
+                <button class="px-3 py-1 bg-gray-200 rounded-full text-xs whitespace-nowrap">
+                    Notification
+                </button>
+            </div>
+        </div>
+        
+        <!-- Timeline Container -->
+        <div class="relative px-4 py-2 overflow-y-auto" style="height: calc(100vh - 150px)">
+            <!-- Timeline line -->
+            <div class="timeline-line"></div>
+            
+            <!-- Timeline Events -->
+            <div class="space-y-4">
+                <!-- Real-time event (pulsing) -->
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white pulse">
+                        <i class="fas fa-bolt text-xs"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-green-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-semibold text-sm">Order Service</span>
+                                <span class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-xs">200 OK</span>
+                            </div>
+                            <span class="text-xs text-gray-500">Just now</span>
+                        </div>
+                        <p class="text-sm mt-1 text-gray-700">Order #4872 processed successfully</p>
+                        <div class="mt-2 flex space-x-2">
+                            <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded">POST /orders</span>
+                            <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 rounded">12ms</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Warning event -->
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center text-white">
+                        <i class="fas fa-exclamation text-xs"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-yellow-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-semibold text-sm">Payment Service</span>
+                                <span class="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-xs">Warning</span>
+                            </div>
+                            <span class="text-xs text-gray-500">2 min ago</span>
+                        </div>
+                        <p class="text-sm mt-1 text-gray-700">Payment processing took longer than expected</p>
+                        <div class="mt-2 flex space-x-2">
+                            <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded">POST /payments</span>
+                            <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 rounded">1.2s</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Normal event -->
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                        <i class="fas fa-exchange-alt text-xs"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-blue-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-semibold text-sm">Auth Service</span>
+                                <span class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-xs">200 OK</span>
+                            </div>
+                            <span class="text-xs text-gray-500">5 min ago</span>
+                        </div>
+                        <p class="text-sm mt-1 text-gray-700">User authentication successful</p>
+                        <div class="mt-2 flex space-x-2">
+                            <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded">POST /auth</span>
+                            <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 rounded">45ms</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Error event -->
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white">
+                        <i class="fas fa-times text-xs"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-red-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-semibold text-sm">Notification Service</span>
+                                <span class="ml-2 px-2 py-0.5 bg-red-100 text-red-800 rounded-full text-xs">500 Error</span>
+                            </div>
+                            <span class="text-xs text-gray-500">12 min ago</span>
+                        </div>
+                        <p class="text-sm mt-1 text-gray-700">Failed to send email notification</p>
+                        <div class="mt-2 flex space-x-2">
+                            <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded">POST /notify</span>
+                            <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 rounded">320ms</span>
+                        </div>
+                        <div class="mt-2 p-2 bg-red-50 rounded text-xs text-red-700">
+                            Error: SMTP connection timeout
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Info event -->
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white">
+                        <i class="fas fa-info text-xs"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-indigo-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-semibold text-sm">Inventory Service</span>
+                                <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs">Info</span>
+                            </div>
+                            <span class="text-xs text-gray-500">18 min ago</span>
+                        </div>
+                        <p class="text-sm mt-1 text-gray-700">Stock level updated for product #A45B</p>
+                        <div class="mt-2 flex space-x-2">
+                            <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded">PATCH /inventory</span>
+                            <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 rounded">28ms</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Debug event -->
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-gray-500 flex items-center justify-center text-white">
+                        <i class="fas fa-bug text-xs"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-semibold text-sm">API Gateway</span>
+                                <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-800 rounded-full text-xs">Debug</span>
+                            </div>
+                            <span class="text-xs text-gray-500">25 min ago</span>
+                        </div>
+                        <p class="text-sm mt-1 text-gray-700">Request routed to payment service</p>
+                        <div class="mt-2 flex space-x-2">
+                            <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded">Proxy /payments</span>
+                            <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 rounded">5ms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <div class="bg-white border-t flex justify-around items-center p-2">
+            <button class="p-2 text-indigo-600">
+                <i class="fas fa-home text-xl"></i>
+            </button>
+            <button class="p-2 text-gray-500">
+                <i class="fas fa-chart-line text-xl"></i>
+            </button>
+            <button class="p-2 bg-indigo-600 text-white rounded-full p-3 -mt-6 shadow-lg">
+                <i class="fas fa-plus text-xl"></i>
+            </button>
+            <button class="p-2 text-gray-500">
+                <i class="fas fa-bell text-xl"></i>
+            </button>
+            <button class="p-2 text-gray-500">
+                <i class="fas fa-cog text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('current-time').textContent = timeString;
+        }
+        
+        // Update time immediately and then every minute
+        updateTime();
+        setInterval(updateTime, 60000);
+        
+        // Simulate new events coming in
+        setInterval(() => {
+            const timeline = document.querySelector('.space-y-4');
+            const newEvent = document.createElement('div');
+            newEvent.className = 'relative pl-12';
+            
+            const services = ['Order Service', 'Payment Service', 'Auth Service', 'Inventory Service'];
+            const statuses = [
+                {color: 'green', text: '200 OK', icon: 'bolt'},
+                {color: 'blue', text: '201 Created', icon: 'exchange-alt'},
+                {color: 'yellow', text: 'Warning', icon: 'exclamation'}
+            ];
+            
+            const randomService = services[Math.floor(Math.random() * services.length)];
+            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+            const randomMethod = ['GET', 'POST', 'PUT', 'DELETE'][Math.floor(Math.random() * 4)];
+            const randomEndpoint = ['/orders', '/payments', '/auth', '/inventory'][Math.floor(Math.random() * 4)];
+            const randomTime = Math.floor(Math.random() * 500) + 'ms';
+            
+            newEvent.innerHTML = `
+                <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-${randomStatus.color}-500 flex items-center justify-center text-white pulse">
+                    <i class="fas fa-${randomStatus.icon} text-xs"></i>
+                </div>
+                <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-${randomStatus.color}-500">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="font-semibold text-sm">${randomService}</span>
+                            <span class="ml-2 px-2 py-0.5 bg-${randomStatus.color}-100 text-${randomStatus.color}-800 rounded-full text-xs">${randomStatus.text}</span>
+                        </div>
+                        <span class="text-xs text-gray-500">Just now</span>
+                    </div>
+                    <p class="text-sm mt-1 text-gray-700">${randomMethod} request processed</p>
+                    <div class="mt-2 flex space-x-2">
+                        <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded">${randomMethod} ${randomEndpoint}</span>
+                        <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 rounded">${randomTime}</span>
+                    </div>
+                </div>
+            `;
+            
+            timeline.insertBefore(newEvent, timeline.firstChild);
+            
+            // Remove pulse animation after 5 seconds
+            setTimeout(() => {
+                const icon = newEvent.querySelector('.pulse');
+                if (icon) {
+                    icon.classList.remove('pulse');
+                }
+            }, 5000);
+            
+        }, 8000); // Add new event every 8 seconds
+    </script>
+</body>
+</html>
+
+
+<!-- Generate UI of mobile application wtih vertical timeline of microservices events. The application is so visually thoughtful that even one glance is enough to sort out the logs. -->

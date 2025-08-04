@@ -18,6 +18,13 @@ const QueryPanel = ({ onSendMessage, placeholder, selectedProvider, onProviderCh
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   return (
     <div className="bg-black bg-opacity-50 backdrop-blur-md ring-1 ring-gray-800 hover:ring-gray-700 focus-within:ring-gray-700 hover:focus-within:ring-gray-700 relative w-full overflow-hidden shadow shadow-black/10 rounded-3xl p-3 transition-all duration-100 ease-in-out flex flex-col max-w-2xl mx-auto">
       <div className="relative z-10 mb-12">
@@ -31,6 +38,7 @@ const QueryPanel = ({ onSendMessage, placeholder, selectedProvider, onProviderCh
           style={{ height: "44px" }}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
         />
 
