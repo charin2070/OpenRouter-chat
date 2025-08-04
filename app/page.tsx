@@ -46,7 +46,7 @@ export default function ChatPage() {
             placeholder='Добавьте детали...'
             onSendMessage={sendMessage}
             selectedProvider={selectedProvider}
-            onProviderChange={setSelectedProvider}
+            onProviderChange={(value) => setSelectedProvider(value as any)}
           />
         </div>
       </div>
