@@ -49,6 +49,15 @@ export function LogUploader() {
   }
 
   return (
-
+    <div>
+      <input type="file" onChange={handleFileChange} disabled={isLoading} accept=".har" />
+      {isLoading && <p>Analyzing HAR file...</p>}
+      {errors.length > 0 && (
+        <div>
+          <h2>Detected Errors:</h2>
+          <pre>{JSON.stringify(errors, null, 2)}</pre>
+        </div>
+      )}
+    </div>
   );
 }
