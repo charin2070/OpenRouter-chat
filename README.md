@@ -32,11 +32,10 @@ This approach helps reduce mean time to resolution (MTTR), improves the efficien
 - **Language**: TypeScript with strict type checking
 - **Styling**: Tailwind CSS with shadcn/ui components
 - **Authentication**: NextAuth.js with Google OAuth
-- **AI Integration**: OpenRouter API with multiple AI models (Google Gemma 3b, Mistral Medium)
+- **AI Integration**: OpenRouter API, Mistral API
 - **Package Manager**: pnpm (recommended) or npm
 
-## TOP-3 THINGS THAT YOU MIGHT ALWAYS KEEP IN MIND
-
+## TOP-3 Tips
 1. **README.md - entry point for all dubug sessions** - only critical information about project context is stored here. Use it and keep up to date.
 2. **99% actions user requests from QueryPanel component** - this component is the main component of the application and is responsible for the main functionality of the application. Always start debugging from this component.
 3. **QueryPanel component** - this component is the main component of the application and is responsible for the main functionality of the application.
@@ -44,36 +43,24 @@ This approach helps reduce mean time to resolution (MTTR), improves the efficien
 ## Getting Started
 
 ### Prerequisites
-
 - Node.js 18+ 
 - pnpm (recommended) or npm
 - OpenRouter API key
+- Mistral API key
 
 ### Installation
-
 1. Clone the repository:
-   ```bash
    git clone https://github.com/charin2070/goai-timeline
    cd goai-timeline
-   ```
 
 2. Install dependencies:
-   ```bash
    pnpm install
-   # or
-   npm install
-   ```
 
 3. Set up environment variables:
    - Copy `.env.local` and update if needed
-   - The OpenRouter API key is pre-configured for the Gemma 3b free tier
 
 4. Start the development server:
-   ```bash
    pnpm redev
-   # or
-   npm run redev
-   ```
 
 ### Alternative Development Commands
 
@@ -95,7 +82,6 @@ npm start
 ```
 
 ## API Configuration
-
 The application supports multiple AI providers through OpenRouter API:
 
 ### Available AI Models
@@ -103,7 +89,6 @@ The application supports multiple AI providers through OpenRouter API:
 - **Mistral Medium**: `mistralai/mistral-medium` (Premium tier)
 
 ## Project Structure
-
 ```
 ├── app/
 ├── documentation/ # Project documentation and guides
@@ -179,34 +164,20 @@ Each message shows its status:
 - Proper keyboard navigation
 
 ## Environment Variables
-
 Create a `.env.local` file in the root directory with the following variables:
 
-```env
-# OpenRouter API Configuration (supports both Google Gemma and Mistral)
-OPENROUTER_API_KEY=your_openrouter_api_key_here
-
-# AI Model Configuration (optional - defaults are used if not set)
-AI_MISTRAL_MODEL=mistralai/mistral-medium
-AI_TEMPERATURE=0.7
-AI_MAX_TOKENS=1000
-
-# App Configuration
-NEXT_PUBLIC_APP_NAME=Gemma Chat
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Tetris Spinner Configuration
-NEXT_PUBLIC_SPINNER_SPEED=300
-
-# Google OAuth Configuration
-# Get these from https://console.cloud.google.com/apis/credentials
-GOOGLE_CLIENT_ID=your_google_client_id_here
-GOOGLE_CLIENT_SECRET=your_google_client_secret_here
-
-# NextAuth Configuration
-NEXTAUTH_SECRET=your_nextauth_secret_here
-NEXTAUTH_URL=http://localhost:3000
-```
+### Environment Variables Explained
+- **OPENROUTER_API_KEY**: Your OpenRouter API key for AI model access (supports both Google Gemma and Mistral)
+- **AI_MISTRAL_MODEL**: Mistral model identifier (default: `mistralai/mistral-medium`)
+- **AI_TEMPERATURE**: Controls response randomness (default: 0.7)
+- **AI_MAX_TOKENS**: Maximum tokens in response (default: 1000)
+- **NEXT_PUBLIC_APP_NAME**: The name of your application (displayed in UI)
+- **NEXT_PUBLIC_APP_URL**: The base URL of your application
+- **NEXT_PUBLIC_SPINNER_SPEED**: Speed of Tetris spinner animation in milliseconds (default: 300ms)
+- **GOOGLE_CLIENT_ID**: Google OAuth client ID for authentication
+- **GOOGLE_CLIENT_SECRET**: Google OAuth client secret for authentication
+- **NEXTAUTH_SECRET**: Secret key for NextAuth.js session encryption
+- **NEXTAUTH_URL**: The base URL for NextAuth.js callbacks
 
 ### Setting up Google OAuth
 
@@ -223,20 +194,6 @@ You can generate a secure secret using:
 ```bash
 openssl rand -base64 32
 ```
-
-### Environment Variables Explained
-
-- **OPENROUTER_API_KEY**: Your OpenRouter API key for AI model access (supports both Google Gemma and Mistral)
-- **AI_MISTRAL_MODEL**: Mistral model identifier (default: `mistralai/mistral-medium`)
-- **AI_TEMPERATURE**: Controls response randomness (default: 0.7)
-- **AI_MAX_TOKENS**: Maximum tokens in response (default: 1000)
-- **NEXT_PUBLIC_APP_NAME**: The name of your application (displayed in UI)
-- **NEXT_PUBLIC_APP_URL**: The base URL of your application
-- **NEXT_PUBLIC_SPINNER_SPEED**: Speed of Tetris spinner animation in milliseconds (default: 300ms)
-- **GOOGLE_CLIENT_ID**: Google OAuth client ID for authentication
-- **GOOGLE_CLIENT_SECRET**: Google OAuth client secret for authentication
-- **NEXTAUTH_SECRET**: Secret key for NextAuth.js session encryption
-- **NEXTAUTH_URL**: The base URL for NextAuth.js callbacks
 
 ### Complete Setup Steps
 

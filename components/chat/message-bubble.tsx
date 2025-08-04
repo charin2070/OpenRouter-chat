@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import { ChatMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -47,24 +45,25 @@ export function MessageBubble({ message, userAvatar }: MessageBubbleProps) {
     <div className={cn('flex items-start gap-4 w-full', isUser ? 'justify-end' : 'justify-start')}>
       {!isUser && avatar}
       <div className={cn(
-        'relative max-w-xl w-full rounded-xl p-4 shadow-lg transition-all duration-300 hover:shadow-2xl',
+        'relative max-w-xl min-w-[120px] rounded-xl p-4 shadow-lg transition-all duration-300 hover:shadow-2xl',
         isUser
           ? 'bg-blue-900/50 border border-blue-800/50'
           : 'bg-gray-800/50 border border-gray-700/50',
         isError && !isUser && 'bg-red-900/50 border-red-800/50'
       )}>
-        <div className="flex items-center justify-between mb-2">
-          <span className={cn(
-            'font-semibold text-sm',
-            isUser ? 'text-blue-300' : 'text-gray-300',
-            isError && !isUser && 'text-red-300'
-          )}>
-            {isUser ? 'Вы' : 'AI Ассистент'}
-          </span>
-          <span className="text-xs text-gray-500">
-            {format(message.timestamp, 'HH:mm')}
-          </span>
-        </div>
+        {!isUser && (
+          <div className="flex items-center justify-between mb-2">
+            <span className={cn(
+              'font-semibold text-sm',
+              isError ? 'text-red-300' : 'text-gray-300'
+            )}>
+              AI Ассистент
+            </span>
+            <span className="text-xs text-gray-500">
+              {format(message.timestamp, 'HH:mm')}
+            </span>
+          </div>
+        )}
 
         <p className={cn(
           'text-sm leading-relaxed whitespace-pre-wrap',
@@ -75,7 +74,10 @@ export function MessageBubble({ message, userAvatar }: MessageBubbleProps) {
         </p>
 
         {isUser && (
-          <div className="absolute bottom-2 right-3">
+          <div className="absolute bottom-2 right-3 flex items-center gap-1">
+            <span className="text-xs text-gray-500">
+              {format(message.timestamp, 'HH:mm')}
+            </span>
             {getStatusIcon()}
           </div>
         )}

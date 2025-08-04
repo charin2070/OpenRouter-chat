@@ -1,13 +1,12 @@
 'use client';
 
-'use client';
-
 import { ChatMessage } from '@/lib/types';
 import { MessageBubble } from './message-bubble';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/lib/auth-context';
+import { TetrisSpinner } from '@/components/ui/tetris-spinner';
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -62,30 +61,8 @@ export function MessageList({ messages, isTyping }: MessageListProps) {
         )}
         
         {isTyping && (
-          <div className="chatgpt-message chatgpt-message-assistant">
-            <div className="max-w-4xl mx-auto px-4 py-6">
-              <div className="flex items-start space-x-4">
-                <div className="chatgpt-avatar chatgpt-avatar-assistant flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-sm font-medium">G</span>
-                </div>
-                <div className="flex-1">
-                  <div className="chatgpt-text">
-                    <div className="flex space-x-1">
-                      {[0, 1, 2].map((i) => (
-                        <div
-                          key={i}
-                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                          style={{
-                            animationDelay: `${i * 0.1}s`,
-                            animationDuration: '1s',
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="flex justify-center py-6">
+            <TetrisSpinner />
           </div>
         )}
       </div>
