@@ -6,7 +6,7 @@ import { MessageList } from '@/components/chat/message-list';
 import { MessageInput } from '@/components/chat/message-input';
 import { ErrorMessage } from '@/components/chat/error-message';
 import { LogUploader } from '@/components/chat/log-uploader';
-import { Sidebar } from '@/components/chat/sidebar';
+
 import { SignIn } from '@/components/auth/sign-in';
 import { useAuth } from '@/lib/auth-context';
 import { Loading } from '@/components/ui/loading';
@@ -18,8 +18,6 @@ export default function ChatPage() {
   const {
     messages,
     isLoading: chatLoading,
-    selectedProvider,
-    setSelectedProvider,
     sendMessage,
     clearChat,
     retryLastMessage,
@@ -45,8 +43,7 @@ export default function ChatPage() {
           <QueryPanel 
             placeholder='Добавьте детали...'
             onSendMessage={sendMessage}
-            selectedProvider={selectedProvider}
-            onProviderChange={(value) => setSelectedProvider(value as any)}
+            onClearChat={clearChat}
           />
         </div>
       </div>

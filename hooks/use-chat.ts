@@ -180,7 +180,7 @@ export function useChat() {
     
     setMessages([]);
     setIsLoading(false);
-    toast.success('Chat cleared');
+    toast.success('Чат очищен');
   }, []);
 
   const retryLastMessage = useCallback(() => {

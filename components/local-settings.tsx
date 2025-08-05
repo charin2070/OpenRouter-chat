@@ -1,37 +1,61 @@
 'use client';
 
-import React from 'react';
-import { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { AiProviderDropdown } from './chat/ai-provider-dropdown';
+import { Button } from '@/components/ui/button';
+import { Modal } from '@/components/ui/modal';
+import { SettingsIcon } from 'lucide-react';
+import { AIProvider } from '@/lib/types';
+import { createClient } from '@/lib/supabase/client';
 
-export function LocalSettings() {
-    // Default settings
-            const defaultSettings = { activeProvider: 'google-gemma', theme: 'light', language: 'rus', maxTokens: 1000, temperature: 0.7  };
+interface LocalSettingsProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-    // Check and apply settings from localStorage or set default settings
-    const localStorageData = localStorage.getItem('settings');
-    const settings = localStorageData ? JSON.parse(localStorageData) : defaultSettings;
+export function LocalSettings({ isOpen, onClose }: LocalSettingsProps) {
+  const [selectedProvider, setSelectedProvider] = useState<AIProvider>('google-gemma');
+  const [localProvider, setLocalProvider] = useState<AIProvider>(selectedProvider);
 
-    if (!localStorageData) {
-        localStorage.setItem('settings', JSON.stringify(defaultSettings));
+  useEffect(() => {
+    if (selectedProvider) {
+      setLocalProvider(selectedProvider);
     }
+  }, [selectedProvider]);
 
-    const activeProvider = settings.activeProvider;
+  const handleProviderChange = useCallback((provider: AIProvider) => {
+    console.log('Provider changed to:', provider);
+    const validProviders: AIProvider[] = ['google-gemma', 'mistral-medium'];
+    if (!validProviders.includes(provider)) {
+      console.error('Invalid provider selected:', provider);
+      return;
+    }
+    setLocalProvider(provider);
+    setSelectedProvider(provider);
+  }, []);
 
-    const handleProviderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const newProvider = event.target.value;
-        settings.activeProvider = newProvider;
-        localStorage.setItem('settings', JSON.stringify(settings));
-        window.location.reload();
-    };
-
-    return (
-        <div className="local-settings">
-            <h2>Local Settings</h2>
-            <label htmlFor="provider-select">Select AI Provider:</label>
-            <select id="provider-select" value={activeProvider} onChange={handleProviderChange}>
-                <option value="google-gemma">Google Gemma</option>
-                <option value="mistral-medium">Mistral Medium</option>
-            </select>
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal.Header>
+        <Modal.Title>Настройки</Modal.Title>
+        <Button onClick={onClose}>
+          <SettingsIcon className="w-4 h-4" />
+        </Button>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold">AI Провайдер</h2>
+          <AiProviderDropdown
+            selectedProvider={localProvider}
+            onProviderChange={handleProviderChange}
+            showStatus={true}
+            compact={false}
+          />
         </div>
-    );
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={onClose}>Закрыть</Button>
+      </Modal.Footer>
+    </Modal>
+  );
 }

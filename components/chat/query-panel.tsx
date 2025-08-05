@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Paperclip, ChevronDown, Send } from "lucide-react";
+import { Send, Trash2 } from "lucide-react";
 import DropButton from '@/components/ui/drop-button';
 import { UserProfile } from '@/components/auth/user-profile';
 
 // Define the QueryPanel component
 
-const QueryPanel = ({ onSendMessage, placeholder, selectedProvider, onProviderChange }: { onSendMessage: (message: string) => void; placeholder?: string; selectedProvider: string; onProviderChange: (value: string) => void; }) => {
+interface QueryPanelProps {
+  onSendMessage: (message: string) => void;
+  placeholder?: string;
+  onClearChat: () => void;
+}
+
+const QueryPanel = ({ onSendMessage, placeholder, onClearChat }: QueryPanelProps) => {
   const [inputValue, setInputValue] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -44,19 +49,14 @@ const QueryPanel = ({ onSendMessage, placeholder, selectedProvider, onProviderCh
 
       </div>
       
-      <div className="flex items-center">
-            <Select value={selectedProvider} onValueChange={onProviderChange}>
-              <SelectTrigger className="h-10 px-3 py-2 text-sm rounded-full border border-gray-700 bg-black bg-opacity-60 backdrop-blur-md hover:bg-gray-700 hover:bg-opacity-80 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600 w-fit gap-2 text-gray-300 transition-all duration-200 ease-in-out">
-                <SelectValue placeholder="Mistral Medium" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="google-gemma">Gemma 3</SelectItem>
-                <SelectItem value="mistral-medium">Mistral Medium</SelectItem>
-              </SelectContent>
-            </Select>
-   
-      
-        <div className="ml-auto flex flex-row items-end gap-1">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={onClearChat} className="text-gray-400 hover:text-white">
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+        
+        <div className="flex flex-row items-end gap-1">
           <DropButton 
             label=""
             width="46px"
@@ -66,11 +66,9 @@ const QueryPanel = ({ onSendMessage, placeholder, selectedProvider, onProviderCh
             icon={Send}
             iconWidth="56px"
             iconHeight="56px"
-            
             onClick={handleSendMessage} 
           />
         </div>
-
       </div>
     </div>
   );

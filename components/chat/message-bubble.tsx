@@ -45,12 +45,13 @@ export function MessageBubble({ message, userAvatar }: MessageBubbleProps) {
     <div className={cn('flex items-start gap-4 w-full', isUser ? 'justify-end' : 'justify-start')}>
       {!isUser && avatar}
       <div className={cn(
-        'relative max-w-xl min-w-[120px] rounded-xl p-4 shadow-lg transition-all duration-300 hover:shadow-2xl',
+        'relative max-w-xl min-w-[120px] rounded-xl p-4 pb-8 shadow-lg transition-all duration-300 hover:shadow-2xl',
         isUser
           ? 'bg-blue-900/50 border border-blue-800/50'
           : 'bg-gray-800/50 border border-gray-700/50',
         isError && !isUser && 'bg-red-900/50 border-red-800/50'
       )}>
+        {/* Increased bottom padding to pb-8 to prevent text overlap */}
         {!isUser && (
           <div className="flex items-center justify-between mb-2">
             <span className={cn(

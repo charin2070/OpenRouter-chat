@@ -3,10 +3,10 @@ import type { Metadata } from 'next';
 import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
-  title: 'Chat GoAI',
-  description: 'Chat with AI assistant powered by GoAI model',
-  keywords: ['AI', 'chat', 'ChatGPT', 'OpenRouter'],
-  authors: [{ name: 'Chat GoAI' }],
+  title: 'GoAI Timeline',
+  description: 'Events summarization and analysis',
+  keywords: ['AI', 'chat', 'ChatGPT', 'OpenRouter', 'Mistral'],
+  authors: [{ name: 'Charin' }],
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
   icons: {
     icon: '/favicon.svg',

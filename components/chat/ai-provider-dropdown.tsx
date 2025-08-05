@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Bot, Sparkles, Zap } from 'lucide-react';
-import { AI_PROVIDERS, AIProvider } from '@/lib/types';
+import { AIProvider, AIModel } from '@/lib/types';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 interface AiProviderDropdownProps {
   selectedProvider: AIProvider;
@@ -21,6 +23,34 @@ export function AiProviderDropdown({
   showStatus = true,
   compact = false
 }: AiProviderDropdownProps) {
+  const [providers, setProviders] = useState<AIModel[]>([]);
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('settings')
+        .select('value')
+        .eq('key', 'ai_models')
+        .single();
+
+      if (error) {
+        console.error('Error fetching AI providers:', error);
+        return;
+      }
+
+      // The value from Supabase is a JSON array, so we parse it.
+      // We also need to assert the type for TypeScript.
+      const providerData = data.value as any[];
+      
+      // The data from the DB has `id`, `name`, `description`.
+      // The `AIModel` type has `index`, `name`, `description`.
+      // We need to map `id` to `index`.
+      setProviders(providerData.map(p => ({ ...p, index: p.id })));
+    };
+
+    fetchProviders();
+  }, []);
   const getProviderIcon = (providerId: AIProvider) => {
     switch (providerId) {
       case 'google-gemma':
@@ -43,6 +73,13 @@ export function AiProviderDropdown({
     }
   };
 
+  // Get the selected provider's name and ensure it's always a string
+  const selectedProviderName = providers.find(p => p.index === selectedProvider)?.name || 
+                             (selectedProvider || 'Select a model');
+
+  // Ensure we have a valid selected provider
+  const safeSelectedProvider = selectedProvider || (providers[0]?.index as AIProvider | undefined) || 'google-gemma';
+
   return (
     <div className={`ai-provider-dropdown ${className}`}>
       {!compact && (
@@ -51,44 +88,30 @@ export function AiProviderDropdown({
           AI Provider
         </div>
       )}
-      <Select value={selectedProvider} onValueChange={onProviderChange}>
-        <SelectTrigger className="w-full h-10">
-          <SelectValue placeholder="Select AI provider">
-            <div className="flex items-center gap-2">
-              {getProviderIcon(selectedProvider)}
-              <span>{AI_PROVIDERS.find(p => p.id === selectedProvider)?.name}</span>
-              {showStatus && (
-                <Badge variant={getProviderStatus(selectedProvider).variant} className="text-xs">
-                  {getProviderStatus(selectedProvider).text}
-                </Badge>
-              )}
-            </div>
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          {AI_PROVIDERS.map((provider) => {
-            const status = getProviderStatus(provider.id as AIProvider);
-            return (
-              <SelectItem key={provider.id} value={provider.id}>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-2">
-                      {getProviderIcon(provider.id as AIProvider)}
-                      <span className="font-medium">{provider.name}</span>
-                    </div>
-                    <span className="text-xs text-gray-500">{provider.description}</span>
-                  </div>
-                  {showStatus && (
-                    <Badge variant={status.variant} className="text-xs ml-2">
-                      {status.text}
-                    </Badge>
-                  )}
-                </div>
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
+      <Select 
+  value={safeSelectedProvider} 
+  onValueChange={(value) => {
+    console.log('Dropdown value changed to:', value);
+    onProviderChange(value as AIProvider);
+  }}
+>
+  {providers.map((provider) => (
+    <SelectItem key={provider.index} value={provider.index}>
+      <div className="flex items-center gap-2">
+        {getProviderIcon(provider.index as AIProvider)}
+        <span className="truncate">{provider.name}</span>
+        {showStatus && (
+          <Badge 
+            variant={getProviderStatus(provider.index as AIProvider).variant} 
+            className="text-xs flex-shrink-0"
+          >
+            {getProviderStatus(provider.index as AIProvider).text}
+          </Badge>
+        )}
+      </div>
+    </SelectItem>
+  ))}
+</Select>
     </div>
   );
 }
