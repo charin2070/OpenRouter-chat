@@ -1,5 +1,6 @@
 // components/ui/modal.tsx
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -12,7 +13,7 @@ interface ModalHeaderProps {
 }
 
 const ModalHeader: React.FC<ModalHeaderProps> = ({ children }) => {
-  return <div className="modal-header">{children}</div>;
+  return <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white">{children}</div>;
 };
 
 interface ModalTitleProps {
@@ -20,7 +21,15 @@ interface ModalTitleProps {
 }
 
 const ModalTitle: React.FC<ModalTitleProps> = ({ children }) => {
-  return <h2 className="modal-title">{children}</h2>;
+  return <h2 className="text-lg font-semibold text-gray-900">{children}</h2>;
+};
+
+interface ModalBodyProps {
+  children: React.ReactNode;
+}
+
+const ModalBody: React.FC<ModalBodyProps> = ({ children }) => {
+  return <div className="flex-1 overflow-y-auto p-6 bg-gray-50 min-h-[500px] transition-all duration-300 ease-in-out">{children}</div>;
 };
 
 interface ModalFooterProps {
@@ -28,25 +37,49 @@ interface ModalFooterProps {
 }
 
 const ModalFooter: React.FC<ModalFooterProps> = ({ children }) => {
-  return <div className="modal-footer">{children}</div>;
+  return <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-white">{children}</div>;
 };
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+interface ModalComponent extends React.FC<ModalProps> {
+  Header: React.FC<ModalHeaderProps>;
+  Title: React.FC<ModalTitleProps>;
+  Body: React.FC<ModalBodyProps>;
+  Footer: React.FC<ModalFooterProps>;
+}
+
+const ModalBase: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity">
-      <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-          {children}
-        </div>
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const modalContent = (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300"
+      onClick={handleBackdropClick}
+    >
+      <div className="relative w-full max-w-6xl max-h-[95vh] bg-white rounded-xl shadow-2xl transform transition-all duration-300 scale-100 overflow-hidden">
+        {children}
       </div>
     </div>
   );
+
+  // Use Portal to render modal at the root level
+  if (typeof document !== 'undefined') {
+    return createPortal(modalContent, document.body);
+  }
+
+  return modalContent;
 };
+
+const Modal = ModalBase as ModalComponent;
 
 Modal.Header = ModalHeader;
 Modal.Title = ModalTitle;
+Modal.Body = ModalBody;
 Modal.Footer = ModalFooter;
 
 export default Modal;

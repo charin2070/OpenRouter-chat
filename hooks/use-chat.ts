@@ -194,6 +194,18 @@ export function useChat() {
     }
   }, [messages, sendMessage]);
 
+  const repeatMessage = useCallback((messageId: string) => {
+    const messageToRepeat = messages.find(msg => msg.id === messageId && msg.role === 'user');
+    if (messageToRepeat) {
+      sendMessage(messageToRepeat.content);
+    }
+  }, [messages, sendMessage]);
+
+  const editMessage = useCallback((messageId: string) => {
+    const messageToEdit = messages.find(msg => msg.id === messageId && msg.role === 'user');
+    return messageToEdit?.content || '';
+  }, [messages]);
+
   return {
     messages,
     isLoading: isLoading || isProviderLoading,
@@ -203,5 +215,7 @@ export function useChat() {
     sendMessage,
     clearChat,
     retryLastMessage,
+    repeatMessage,
+    editMessage,
   };
 }

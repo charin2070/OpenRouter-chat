@@ -3,15 +3,17 @@
 import { ChatMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Check, CheckCheck, AlertCircle, User } from 'lucide-react';
+import { Check, CheckCheck, AlertCircle, User, RotateCcw, Edit } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface MessageBubbleProps {
   message: ChatMessage;
   userAvatar: string | null;
+  onRepeatMessage?: (messageId: string) => void;
+  onEditMessage?: (messageId: string) => void;
 }
 
-export function MessageBubble({ message, userAvatar }: MessageBubbleProps) {
+export function MessageBubble({ message, userAvatar, onRepeatMessage, onEditMessage }: MessageBubbleProps) {
   const isUser = message.role === 'user';
   const isError = message.status === 'error';
 
@@ -80,6 +82,30 @@ export function MessageBubble({ message, userAvatar }: MessageBubbleProps) {
               {format(message.timestamp, 'HH:mm')}
             </span>
             {getStatusIcon()}
+          </div>
+        )}
+
+        {/* Action buttons for user messages */}
+        {isUser && (onRepeatMessage || onEditMessage) && (
+          <div className="absolute -bottom-6 left-2 flex gap-1">
+            {onRepeatMessage && (
+              <button
+                onClick={() => onRepeatMessage(message.id)}
+                className="p-1 rounded-full bg-gray-700/80 hover:bg-gray-600/80 transition-colors duration-200 opacity-70 hover:opacity-100"
+                title="Повторить сообщение"
+              >
+                <RotateCcw className="w-3 h-3 text-gray-300" />
+              </button>
+            )}
+            {onEditMessage && (
+              <button
+                onClick={() => onEditMessage(message.id)}
+                className="p-1 rounded-full bg-gray-700/80 hover:bg-gray-600/80 transition-colors duration-200 opacity-70 hover:opacity-100"
+                title="Редактировать сообщение"
+              >
+                <Edit className="w-3 h-3 text-gray-300" />
+              </button>
+            )}
           </div>
         )}
 

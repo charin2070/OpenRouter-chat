@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useImperativeHandle, forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Send, Trash2 } from "lucide-react";
 import DropButton from '@/components/ui/drop-button';
@@ -10,11 +10,20 @@ interface QueryPanelProps {
   onSendMessage: (message: string) => void;
   placeholder?: string;
   onClearChat: () => void;
+  onEditMessage?: (messageId: string) => void;
 }
 
-const QueryPanel = ({ onSendMessage, placeholder, onClearChat }: QueryPanelProps) => {
+export interface QueryPanelRef {
+  setInputValue: (value: string) => void;
+}
+
+const QueryPanel = forwardRef<QueryPanelRef, QueryPanelProps>(({ onSendMessage, placeholder, onClearChat }: QueryPanelProps, ref) => {
   const [inputValue, setInputValue] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    setInputValue,
+  }));
 
   const handleSendMessage = () => {
     if (inputValue.trim()) {
@@ -72,6 +81,8 @@ const QueryPanel = ({ onSendMessage, placeholder, onClearChat }: QueryPanelProps
       </div>
     </div>
   );
-};
+});
+
+QueryPanel.displayName = 'QueryPanel';
 
 export default QueryPanel;

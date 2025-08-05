@@ -11,9 +11,11 @@ import { TetrisSpinner } from '@/components/ui/tetris-spinner';
 interface MessageListProps {
   messages: ChatMessage[];
   isTyping: boolean;
+  onRepeatMessage?: (messageId: string) => void;
+  onEditMessage?: (messageId: string) => void;
 }
 
-export function MessageList({ messages, isTyping }: MessageListProps) {
+export function MessageList({ messages, isTyping, onRepeatMessage, onEditMessage }: MessageListProps) {
   const { session } = useAuth();
   const userAvatar = session?.user?.image || null;
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -55,7 +57,13 @@ export function MessageList({ messages, isTyping }: MessageListProps) {
         ) : (
           <div className="flex flex-col gap-4 p-4">
             {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} userAvatar={userAvatar} />
+              <MessageBubble 
+                key={message.id} 
+                message={message} 
+                userAvatar={userAvatar} 
+                onRepeatMessage={onRepeatMessage}
+                onEditMessage={onEditMessage}
+              />
             ))}
           </div>
         )}

@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Bot, Sparkles, Zap } from 'lucide-react';
 import { AIProvider, AIModel } from '@/lib/types';
@@ -88,30 +87,36 @@ export function AiProviderDropdown({
           AI Provider
         </div>
       )}
-      <Select 
-  value={safeSelectedProvider} 
-  onValueChange={(value) => {
-    console.log('Dropdown value changed to:', value);
-    onProviderChange(value as AIProvider);
-  }}
->
-  {providers.map((provider) => (
-    <SelectItem key={provider.index} value={provider.index}>
-      <div className="flex items-center gap-2">
-        {getProviderIcon(provider.index as AIProvider)}
-        <span className="truncate">{provider.name}</span>
-        {showStatus && (
-          <Badge 
-            variant={getProviderStatus(provider.index as AIProvider).variant} 
-            className="text-xs flex-shrink-0"
-          >
-            {getProviderStatus(provider.index as AIProvider).text}
-          </Badge>
-        )}
+      <div className="relative">
+        <select 
+          value={safeSelectedProvider} 
+          onChange={(e) => {
+            console.log('Dropdown value changed to:', e.target.value);
+            onProviderChange(e.target.value as AIProvider);
+          }}
+          className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 appearance-none"
+        >
+          {providers.map((provider) => (
+            <option key={provider.index} value={provider.index}>
+              {provider.name}
+              {showStatus && ` (${getProviderStatus(provider.index as AIProvider).text})`}
+            </option>
+          ))}
+        </select>
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+          {getProviderIcon(safeSelectedProvider)}
+        </div>
       </div>
-    </SelectItem>
-  ))}
-</Select>
+      {showStatus && (
+        <div className="mt-2 flex items-center gap-2">
+          <Badge 
+            variant={getProviderStatus(safeSelectedProvider).variant} 
+            className="text-xs"
+          >
+            {getProviderStatus(safeSelectedProvider).text}
+          </Badge>
+        </div>
+      )}
     </div>
   );
 }
