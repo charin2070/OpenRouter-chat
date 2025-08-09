@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Check, CheckCheck, AlertCircle, User, RotateCcw, Edit } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -68,13 +70,40 @@ export function MessageBubble({ message, userAvatar, onRepeatMessage, onEditMess
           </div>
         )}
 
-        <p className={cn(
-          'text-sm leading-relaxed whitespace-pre-wrap',
+        <div className={cn(
+          'text-sm leading-relaxed',
           isUser ? 'text-gray-200' : 'text-gray-300',
           isError && !isUser && 'text-red-300'
         )}>
-          {message.content}
-        </p>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              a: ({ href, children }) => (
+                <a
+                  href={href || ''}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-dotted hover:decoration-solid"
+                >
+                  {children}
+                </a>
+              ),
+            }}
+            className={cn(
+              'space-y-3',
+              '[&_*]:break-words',
+              '[&>p]:whitespace-pre-wrap',
+              '[&>ul]:list-disc [&>ul]:pl-5',
+              '[&>ol]:list-decimal [&>ol]:pl-5',
+              '[&>h1]:text-lg [&>h1]:font-semibold',
+              '[&>h2]:text-base [&>h2]:font-semibold',
+              '[&>code]:bg-black/30 [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded',
+              '[&>pre]:bg-black/40 [&>pre]:p-3 [&>pre]:rounded-lg [&>pre]:overflow-auto'
+            )}
+          >
+            {message.content}
+          </ReactMarkdown>
+        </div>
 
         {isUser && (
           <div className="absolute bottom-2 right-3 flex items-center gap-1">

@@ -2,7 +2,7 @@ import React, { useState, useImperativeHandle, forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Send, Trash2 } from "lucide-react";
 import DropButton from '@/components/ui/drop-button';
-import { UserProfile } from '@/components/auth/user-profile';
+import { UploadDropdown } from '@/components/upload-dropdown';
 
 // Define the QueryPanel component
 
@@ -11,13 +11,17 @@ interface QueryPanelProps {
   placeholder?: string;
   onClearChat: () => void;
   onEditMessage?: (messageId: string) => void;
+  onLogFileUpload?: () => void;
+  onLogPaste?: () => void;
+  onChatFileUpload?: () => void;
+  onChatPaste?: () => void;
 }
 
 export interface QueryPanelRef {
   setInputValue: (value: string) => void;
 }
 
-const QueryPanel = forwardRef<QueryPanelRef, QueryPanelProps>(({ onSendMessage, placeholder, onClearChat }: QueryPanelProps, ref) => {
+const QueryPanel = forwardRef<QueryPanelRef, QueryPanelProps>(({ onSendMessage, placeholder, onClearChat, onLogFileUpload, onLogPaste, onChatFileUpload, onChatPaste }: QueryPanelProps, ref) => {
   const [inputValue, setInputValue] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -42,9 +46,6 @@ const QueryPanel = forwardRef<QueryPanelRef, QueryPanelProps>(({ onSendMessage, 
   return (
     <div className="bg-black bg-opacity-50 backdrop-blur-md ring-1 ring-gray-800 hover:ring-gray-700 focus-within:ring-gray-700 hover:focus-within:ring-gray-700 relative w-full overflow-hidden shadow shadow-black/10 rounded-3xl p-3 transition-all duration-100 ease-in-out flex flex-col max-w-2xl mx-auto">
       <div className="relative z-10 mb-12">
-
-<UserProfile />
-
         <textarea
           dir="auto"
           aria-label="Опишите детали..."
@@ -60,6 +61,13 @@ const QueryPanel = forwardRef<QueryPanelRef, QueryPanelProps>(({ onSendMessage, 
       
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
+          <UploadDropdown
+            onLogFileUpload={onLogFileUpload}
+            onLogPaste={onLogPaste}
+            onChatFileUpload={onChatFileUpload}
+            onChatPaste={onChatPaste}
+            className="text-gray-400 hover:text-white"
+          />
           <Button variant="ghost" size="icon" onClick={onClearChat} className="text-gray-400 hover:text-white">
             <Trash2 className="w-4 h-4" />
           </Button>

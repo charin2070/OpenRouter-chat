@@ -16,6 +16,7 @@ This approach helps reduce mean time to resolution (MTTR), improves the efficien
 - 🤖 **Multi-AI Provider Support**: Choose between Google Gemma 3b and Mistral Medium models
 - 🎛️ **AI Provider Selection**: Easy switching between AI providers via sidebar dropdown
 - 💬 **Modern UI**: Clean, professional design with message bubbles and animations
+- 📝 **Markdown Support**: Rich message rendering with GFM (lists, tables, checkboxes, code)
 - ⚡ **Real-time Streaming**: See AI responses appear in real-time as they're generated
 - 📱 **Responsive Design**: Works perfectly on desktop and mobile devices
 - 🛡️ **Error Handling**: Graceful error handling with retry functionality
@@ -35,7 +36,9 @@ This approach helps reduce mean time to resolution (MTTR), improves the efficien
 ## TOP-3 Tips
 1. **README.md - entry point for all dubug sessions** - only critical information about project context is stored here. Use it and keep up to date.
 2. **99% actions user requests from QueryPanel component** - this component is the main component of the application and is responsible for the main functionality of the application. Always start debugging from this component.
-3. **QueryPanel component** - this component is the main component of the application and is responsible for the main functionality of the application.
+3. **UI structure** - main UI components: 
+   Chat
+   Settings window
 
 ## Getting Started
 
@@ -233,6 +236,9 @@ The application supports multiple AI providers through a unified interface:
 3. Make your changes
 4. Add appropriate tests
 5. Submit a pull request
+
+## Guides
+- Как добавить Markdown: [app/documentation/Как добавить markdown.md](app/documentation/%D0%9A%D0%B0%D0%BA%20%D0%B4%D0%BE%D0%B1%D0%B0%D0%B2%D0%B8%D1%82%D1%8C%20markdown.md)
 
 ## License
 This project is licensed under the MIT License. See LICENSE file for details.

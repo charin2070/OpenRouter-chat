@@ -155,10 +155,12 @@ export function LocalSettings({ isOpen, onClose }: LocalSettingsProps) {
             <Settings className="w-5 h-5 text-white" />
           </div>
           <div>
-            <Modal.Title className="text-xl font-semibold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-              🚀 Настройки приложения (NEW)
+            <Modal.Title>
+              <span className="text-xl font-semibold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                🚀 Настройки приложения (NEW)
+              </span>
             </Modal.Title>
-            <p className="text-sm text-gray-500 mt-1">Настройте GoAI Timeline под себя</p>
+            <p className="text-sm text-gray-500 mt-1">Настройки могут сохраняться на сервере</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

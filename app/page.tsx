@@ -11,6 +11,7 @@ import { SignIn } from '@/components/auth/sign-in';
 import { useAuth } from '@/lib/auth-context';
 import { Loading } from '@/components/ui/loading';
 import QueryPanel, { QueryPanelRef } from '@/components/chat/query-panel';
+import { AppNavbar } from '@/components/app-navbar';
 import { useRef } from 'react';
 
 export default function ChatPage() {
@@ -46,9 +47,9 @@ export default function ChatPage() {
 
   // Show chat interface if authenticated
   return (
-    <div className="chatgpt-container flex h-screen">
+    <div className="chatgpt-container flex h-screen flex-col">
+      <AppNavbar className="h-16 bg-black/20 backdrop-blur-xl border-b border-white/10 shadow-lg" />
       <div className="chatgpt-main flex flex-col flex-1">
-
         <div className="flex-1 flex flex-col min-h-0">
           <MessageList 
             messages={messages} 
