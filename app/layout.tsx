@@ -1,4 +1,5 @@
 import './globals.css';
+import 'prism-themes/themes/prism-vsc-dark-plus.css';
 import type { Metadata } from 'next';
 import { Providers } from '@/components/providers';
 

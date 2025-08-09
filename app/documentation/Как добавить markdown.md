@@ -88,3 +88,34 @@ function hello(name: string) {
 ## Где вносить изменения дальше
 - Кастомизация рендеринга отдельных элементов (например, ссылки, изображения) — через проп `components` у `ReactMarkdown`
 - Подсветка синтаксиса в блоках кода — добавить rehype-плагин (например, `rehype-prism-plus`), обязательно оценив влияние на бандл и безопасность
+
+## Подсветка синтаксиса (Syntax Highlighting)
+Чтобы включить подсветку кода в чат-сообщениях, используем `rehype-prism-plus` и темы из `prism-themes`.
+
+### Установка
+```bash
+pnpm add rehype-prism-plus prism-themes
+```
+
+### Подключение
+1) В `components/chat/message-bubble.tsx` импортируйте и добавьте плагин:
+```tsx
+import rehypePrism from 'rehype-prism-plus';
+
+<ReactMarkdown
+  remarkPlugins={[remarkGfm]}
+  rehypePlugins={[rehypePrism]}
+>
+  {message.content}
+</ReactMarkdown>
+```
+
+2) Импортируйте тему Prism глобально (например, в `app/layout.tsx`):
+```tsx
+import 'prism-themes/themes/prism-vsc-dark-plus.css';
+```
+
+### Советы
+- Для корректной подсветки указывайте язык в тройных кавычках: ```ts, ```js, ```bash и т.д.
+- Тема выбирается импортом нужного CSS из `prism-themes/themes/*`. Можно заменить на любую другую из пакета.
+- Если блоки кода слишком «плотные», добавьте кастомные отступы/скругления в Tailwind классах контейнера `pre` (см. уже добавленные утилити-классы в компоненте).

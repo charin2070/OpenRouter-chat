@@ -33,6 +33,43 @@ This approach helps reduce mean time to resolution (MTTR), improves the efficien
 - **AI Integration**: OpenRouter API, Mistral API
 - **Package Manager**: pnpm (recommended) or npm
 
+## TOP-10 THINGS ABOUT THIS PROJECT
+1. Single source of truth: `README.md` is the entry point for debugging; always start with it.
+2. Focus component: `QueryPanel` drives the core chat flow; start investigations there.
+3. Multi-provider AI: Users can switch providers at runtime; the selection flows from UI state to backend routing.
+4. Streaming-first UX: The system is optimized for streaming output for lower perceived latency.
+5. Markdown-native chat: Messages support GFM Markdown safely (no raw HTML) with link hardening.
+6. Robust error UX: Clear visual states and retry affordances across the stack.
+7. Strong typing: TypeScript everywhere with shared types to avoid drift.
+8. Auth-gated app: Google OAuth is mandatory; local dev requires proper OAuth setup.
+9. Performance hygiene: Memoization, trimmed bundle, and Tailwind utility approach for lean UI.
+10. Extensibility: Clear component boundaries (sidebar, header, message list/bubble) and hook-based chat logic enable quick feature additions.
+
+## TOP-10 THINGS ABOUT UI
+1. App Router UI: Next.js 13 App Router with React 18 and client/server components; main chat lives in `app/page.tsx` via `QueryPanel`.
+2. QueryPanel is the hub: Most user actions (send, edit, repeat, provider switch, shortcuts) originate from `QueryPanel` and its hooks.
+3. Message rendering: `components/chat/message-bubble.tsx` renders bubbles; supports Markdown via `react-markdown` + `remark-gfm` with safe links and styled lists/code.
+4. Message status UX: Single check = sending, double check = sent, alert = error; timestamps shown; user action buttons (repeat, edit) under user messages.
+5. Sidebar controls: AI provider dropdown in `components/chat/sidebar.tsx` and `ai-provider-dropdown.tsx`; selection persists during session.
+6. UI toolkit: Tailwind CSS + shadcn/ui (Radix) components; consistent theming via global styles in `app/globals.css` and utility `cn`.
+7. Responsive design: Mobile-first, scrollable `message-list`, touch-friendly hit areas, keyboard support (Enter send, Shift+Enter newline).
+8. Streaming UI: AI responses stream into bubbles in real time; smooth animations and micro-interactions for feedback.
+9. Error states: Graceful UI for network/API errors with retry; AI error bubbles highlighted with red accents.
+10. Avatars and identity: User avatar via Google profile (when available), AI fallback badge; clear visual alignment (user right, AI left).
+
+## TOP-10 THINGS ABOUT BACKEND
+1. Auth: NextAuth.js with Google OAuth; required envs `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
+2. API routing: App Router API endpoints under `app/api/` including `auth/[...nextauth]/` and chat endpoint for AI requests.
+3. AI providers: OpenRouter gateway supports Google Gemma and Mistral; selected provider is sent from client and validated server-side.
+4. Streaming responses: Backend returns streaming chunks consumed by UI for real-time rendering.
+5. Config via env: Keys and model params (`OPENROUTER_API_KEY`, `AI_MISTRAL_MODEL`, `AI_TEMPERATURE`, `AI_MAX_TOKENS`) configured via `.env.local`.
+6. Security posture: API keys server-side only; JWT sessions; input validated; rate-limiting considerations in endpoints.
+7. Provider abstraction: Unified request/response shape regardless of underlying model; backend routes to appropriate provider.
+8. Error handling: Backend surfaces typed errors consumed by UI to display retries and error states.
+9. Types: Shared types in `lib/types.ts` standardize message, role, status across client/server.
+10. Deployment: Standard Next build/start; environment variables required at runtime; compatible with Vercel hosting.
+
+
 ## TOP-3 Tips
 1. **README.md - entry point for all dubug sessions** - only critical information about project context is stored here. Use it and keep up to date.
 2. **99% actions user requests from QueryPanel component** - this component is the main component of the application and is responsible for the main functionality of the application. Always start debugging from this component.

@@ -3,10 +3,12 @@
 import { ChatMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Check, CheckCheck, AlertCircle, User, RotateCcw, Edit } from 'lucide-react';
+import { Check, CheckCheck, AlertCircle, User, RotateCcw, Edit, Copy } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypePrism from 'rehype-prism-plus';
+import React, { useRef, useState } from 'react';
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -77,7 +79,47 @@ export function MessageBubble({ message, userAvatar, onRepeatMessage, onEditMess
         )}>
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypePrism]}
             components={{
+              pre: ({ children, ...props }) => {
+                const preRef = useRef<HTMLPreElement | null>(null);
+                const [copied, setCopied] = useState(false);
+
+                const onCopy = async () => {
+                  try {
+                    const text = preRef.current?.textContent || '';
+                    if (text) {
+                      await navigator.clipboard.writeText(text);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
+                    }
+                  } catch (e) {
+                    // no-op
+                  }
+                };
+
+                return (
+                  <>
+                    <pre ref={preRef} {...props}>
+                      {children}
+                    </pre>
+                    <div className="mt-2 flex justify-end">
+                      <button
+                        onClick={onCopy}
+                        className="p-1 rounded-full bg-gray-700/80 hover:bg-gray-600/80 transition-colors duration-200 opacity-80 hover:opacity-100"
+                        title="Копировать код"
+                        aria-label="Копировать код"
+                      >
+                        {copied ? (
+                          <Check className="w-3 h-3 text-green-400" />
+                        ) : (
+                          <Copy className="w-3 h-3 text-gray-200" />
+                        )}
+                      </button>
+                    </div>
+                  </>
+                );
+              },
               a: ({ href, children }) => (
                 <a
                   href={href || ''}
